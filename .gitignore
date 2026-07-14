@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+client/node_modules/
+client/dist/
+client/.env
+server/node_modules/
+server/uploads/
+server/chat-uploads/
+server/.env
+*.log

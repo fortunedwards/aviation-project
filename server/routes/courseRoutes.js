@@ -1,0 +1,16 @@
+const express = require('express');
+const router = express.Router();
+const db = require('../config/db'); // Using your existing db config
+
+// GET /api/courses
+router.get('/', async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM courses ORDER BY category DESC, title ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Could not fetch courses" });
+  }
+});
+
+module.exports = router;

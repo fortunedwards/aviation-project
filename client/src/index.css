@@ -1,0 +1,306 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
+
+@theme {
+  /* Colors */
+  --color-inverse-on-surface: #f2efff;
+  --color-surface: #fcf8ff;
+  --color-tertiary-fixed: #c2e8ff;
+  --color-on-primary-fixed: #001e2f;
+  --color-on-secondary: #ffffff;
+  --color-surface-container-low: #f6f2ff;
+  --color-on-background: #191839;
+  --color-on-error: #ffffff;
+  --color-secondary-fixed: #c8e6ff;
+  --color-surface-bright: #fcf8ff;
+  --color-on-primary-fixed-variant: #004b6f;
+  --color-primary-fixed: #c9e6ff;
+  --color-on-tertiary-container: #fbfcff;
+  --color-secondary: #00658f;
+  --color-on-tertiary: #ffffff;
+  --color-secondary-fixed-dim: #86ceff;
+  --color-tertiary-container: #417b98;
+  --color-outline: #6f7881;
+  --color-on-surface: #191839;
+  --color-on-secondary-fixed: #001e2e;
+  --color-on-error-container: #93000a;
+  --color-inverse-primary: #8bceff;
+  --color-tertiary-fixed-dim: #95ceee;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #007cb3;
+  --color-outline-variant: #bec7d1;
+  --color-secondary-container: #70c7fe;
+  --color-inverse-surface: #2e2d4f;
+  --color-on-surface-variant: #3f4850;
+  --color-on-tertiary-fixed-variant: #004d67;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-secondary-fixed-variant: #004c6d;
+  --color-primary: #00628f;
+  --color-surface-container: #efebff;
+  --color-surface-variant: #e2dfff;
+  --color-on-secondary-container: #005276;
+  --color-background: #fcf8ff;
+  --color-on-primary-container: #fcfcff;
+  --color-tertiary: #24627e;
+  --color-error-container: #ffdad6;
+  --color-surface-container-highest: #e2dfff;
+  --color-surface-tint: #006492;
+  --color-error: #ba1a1a;
+  --color-on-tertiary-fixed: #001e2b;
+  --color-surface-container-high: #e9e5ff;
+  --color-surface-dim: #d9d6ff;
+  --color-primary-fixed-dim: #8bceff;
+
+  /* Border Radius */
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Font Families */
+  --font-headline: 'Libre Franklin', sans-serif;
+  --font-body: 'Libre Franklin', sans-serif;
+  --font-label: 'Libre Franklin', sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    font-optical-sizing: auto;
+    background-color: var(--color-background);
+    color: var(--color-on-surface);
+  }
+
+  body,
+  #root {
+    min-height: 100vh;
+    background-color: var(--color-background);
+    color: var(--color-on-surface);
+  }
+
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span,
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  label {
+    font-family: inherit;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font-optical-sizing: auto;
+  }
+}
+
+@layer components {
+  .container-max {
+    @apply mx-auto w-full max-w-[1440px];
+  }
+
+  .app-page-eyebrow {
+    @apply text-[11px] font-black uppercase tracking-[0.24em] text-sky-600;
+  }
+
+  .app-page-title {
+    @apply mt-2 text-3xl font-black tracking-tight text-slate-900 md:text-4xl;
+  }
+
+  .app-page-copy {
+    @apply mt-2 text-sm leading-6 text-slate-500 md:text-base;
+  }
+
+  .app-card {
+    @apply rounded-[32px] border border-slate-200 bg-white shadow-sm;
+  }
+
+  .app-card-muted {
+    @apply rounded-[28px] border border-slate-200 bg-slate-50/60 shadow-sm;
+  }
+
+  .app-subcard {
+    @apply rounded-3xl border border-slate-200 bg-white px-5 py-4 shadow-sm;
+  }
+
+  .app-subcard-label {
+    @apply text-[11px] font-black uppercase tracking-[0.2em] text-slate-400;
+  }
+
+  .app-subcard-value {
+    @apply mt-2 text-2xl font-black tracking-tight text-slate-900;
+  }
+
+  .app-table-shell {
+    @apply overflow-x-auto rounded-[28px] border border-slate-200 bg-white shadow-sm;
+  }
+
+  .app-table-head {
+    @apply bg-slate-50 text-left text-[11px] font-black uppercase tracking-[0.18em] text-slate-400;
+  }
+
+  .app-pill {
+    @apply inline-flex rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide;
+  }
+
+  .app-pill-sky {
+    @apply inline-flex rounded-full bg-sky-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-sky-700;
+  }
+
+  .app-pill-slate {
+    @apply inline-flex rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500;
+  }
+
+  .app-pill-success {
+    @apply inline-flex rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-700;
+  }
+
+  .app-pill-danger {
+    @apply inline-flex rounded-full bg-rose-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-700;
+  }
+
+  .app-button-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-[#2095D3] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#167CB3] disabled:cursor-not-allowed disabled:opacity-70;
+  }
+
+  .app-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-600 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .app-field-label {
+    @apply mb-2 block text-xs font-semibold tracking-[0.18em] text-slate-500;
+  }
+
+  .app-input {
+    @apply w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm font-medium text-slate-800 outline-none transition focus:border-sky-400 focus:bg-white focus:ring-4 focus:ring-sky-100;
+  }
+
+  .app-avatar {
+    @apply flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-sm font-black text-slate-800;
+  }
+
+  .app-empty-state {
+    @apply flex flex-col items-center justify-center rounded-[32px] border border-dashed border-slate-200 bg-white px-8 py-20 text-center;
+  }
+
+  .input-field {
+    @apply w-full bg-white border border-slate-300 rounded-lg p-3 text-slate-900 
+           outline-none transition-all focus:ring-2 focus:ring-blue-600 
+           focus:border-transparent;
+  }
+  .label-text {
+    @apply block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wide;
+  }
+  .section-title {
+    @apply text-xl font-bold text-slate-800 mb-6 border-b-2 border-slate-100 
+           pb-2 flex items-center;
+  }
+  .input-slim {
+    @apply w-full bg-transparent border-0 border-b border-outline-variant
+           px-0 py-2.5 outline-none transition-all text-base text-on-surface
+           focus:border-b-2 focus:border-primary placeholder:text-outline-variant;
+  }
+  .select-slim {
+    @apply appearance-none cursor-pointer;
+  }
+  .gradient-btn {
+    @apply bg-primary text-on-primary;
+  }
+  .ambient-shadow {
+    box-shadow: 0 4px 24px rgba(25, 24, 57, 0.06);
+  }
+
+  .card-elegant {
+    @apply border border-slate-100 bg-white shadow-sm transition-shadow duration-300 hover:shadow-2xl;
+  }
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@layer utilities {
+  .text-brand-primary {
+    color: #2095d3;
+  }
+
+  .bg-brand-primary {
+    background-color: #2095d3;
+  }
+
+  .border-brand-primary {
+    border-color: #2095d3;
+  }
+
+  .text-brand-accent {
+    color: #99d2f2;
+  }
+
+  .bg-brand-accent {
+    background-color: #99d2f2;
+  }
+
+  .text-brand-deep {
+    color: #2b2a4c;
+  }
+
+  .bg-brand-deep {
+    background-color: #2b2a4c;
+  }
+
+  .px-container-padding {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .px-container-padding {
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+  }
+
+  .font-display {
+    font-family: var(--font-headline);
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 850ms ease-out both;
+  }
+
+  .animate-fade-in-up-delay {
+    animation: fade-in-up 1000ms ease-out 180ms both;
+  }
+
+  .animate-scroll-bounce {
+    animation: scroll-bounce 1.8s ease-in-out infinite;
+  }
+}
