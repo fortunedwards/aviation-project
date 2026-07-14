@@ -280,7 +280,7 @@ const Register = () => {
   });
 
   useEffect(() => {
-    axios
+    api
       .get('/api/courses')
       .then((res) => setAvailableCourses(res.data))
       .catch(() => {})
@@ -344,7 +344,7 @@ const Register = () => {
     reference: new Date().getTime().toString(),
     email: formData.email,
     amount,
-    publicKey: 'pk_test_your_actual_key_here',
+    publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_your_actual_key_here',
   };
 
   const initializePayment = usePaystackPayment(config);

@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
 exports.initializePayment = async (email, amount, metadata) => {
     try {
@@ -10,7 +11,7 @@ exports.initializePayment = async (email, amount, metadata) => {
                 email,
                 amount: amount * 100, // Paystack expects Kobo (Naira * 100)
                 metadata,
-                callback_url: "http://localhost:3000/payment-success" // Where they go after paying
+                callback_url: `${FRONTEND_URL}/payment-success` // Where they go after paying
             },
             {
                 headers: {
