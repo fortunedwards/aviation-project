@@ -9,12 +9,13 @@ router.get('/', async (req, res) => {
       SELECT
         id,
         title,
-        slug,
-        description,
-        fee_amount AS form_fee,
-        is_free
+        form_fee,
+        category,
+        course_fee,
+        created_at,
+        LOWER(REGEXP_REPLACE(title, '[^a-z0-9]+', '-', 'g')) AS slug
       FROM courses
-      ORDER BY title ASC
+      ORDER BY category DESC, title ASC
     `);
     res.json(result.rows);
   } catch (err) {
