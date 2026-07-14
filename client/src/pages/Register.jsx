@@ -255,6 +255,12 @@ const Register = () => {
   const [availableCourses, setAvailableCourses] = useState([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [emailValid, setEmailValid] = useState(null);
+  const courses = Array.isArray(availableCourses)
+    ? availableCourses
+    : Array.isArray(availableCourses?.data)
+      ? availableCourses.data
+      : [];
+  const safeSteps = Array.isArray(JOURNEY_STEPS) ? JOURNEY_STEPS : [];
 
   const [formData, setFormData] = useState({
     surname: '',
@@ -282,20 +288,20 @@ const Register = () => {
   useEffect(() => {
     api
       .get('/api/courses')
-      .then((res) => setAvailableCourses(res.data))
+      .then((res) => setAvailableCourses(Array.isArray(res.data) ? res.data : Array.isArray(res.data?.data) ? res.data.data : []))
       .catch(() => {})
       .finally(() => setCoursesLoading(false));
   }, []);
 
   useEffect(() => {
-    if (!courseSlugFromURL || formData.selectedCourse || availableCourses.length === 0) return;
-    const matched = availableCourses.find(
+    if (!courseSlugFromURL || formData.selectedCourse || courses.length === 0) return;
+    const matched = courses.find(
       (course) => String(course.slug || '').toLowerCase() === String(courseSlugFromURL).toLowerCase()
     );
     if (matched?.id) {
       setFormData((current) => ({ ...current, selectedCourse: String(matched.id) }));
     }
-  }, [courseSlugFromURL, formData.selectedCourse, availableCourses]);
+  }, [courseSlugFromURL, formData.selectedCourse, courses]);
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -330,7 +336,7 @@ const Register = () => {
     if (certInputRef.current) certInputRef.current.value = '';
   };
 
-  const selectedCourseDetails = availableCourses.find(
+  const selectedCourseDetails = courses.find(
     (course) => String(course.id) === String(formData.selectedCourse)
   );
   const amount = selectedCourseDetails ? parseFloat(selectedCourseDetails.form_fee || 0) * 100 : 0;
@@ -471,7 +477,7 @@ const Register = () => {
     }
   };
 
-  const currentStepMeta = JOURNEY_STEPS.find((item) => item.id === step);
+  const currentStepMeta = safeSteps.find((item) => item.id === step) || safeSteps[0] || null;
   const fullName = [formData.surname, formData.other_names].filter(Boolean).join(' ');
 
   return (
