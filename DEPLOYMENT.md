@@ -20,6 +20,7 @@
 2. Set `VITE_API_URL` to your Railway backend URL.
 3. Set `VITE_SOCKET_URL` to the same Railway backend URL.
 4. Deploy with the default Vite build output (`dist`).
+5. Keep `client/.npmrc` in place so Vercel skips the `react-paystack` vs React 19 peer install conflict.
 
 ## File Storage
 
