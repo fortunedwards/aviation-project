@@ -24,20 +24,25 @@ function PublicHeader() {
       : 'text-slate-700 text-lg font-medium';
 
   return (
-    <header className="fixed top-0 z-50 h-20 w-full border-b border-[#99D2F2] bg-white/90 backdrop-blur-md">
-      <div className="container-max flex h-full w-full items-center justify-between px-6 lg:px-8">
-        <Link to="/" className="inline-flex items-center gap-2 sm:gap-3" aria-label="Aeroconsult Home">
+    <>
+      <header className="fixed top-0 z-50 hidden h-20 w-full border-b border-[#99D2F2] bg-white/90 backdrop-blur-md md:block">
+        <div className="container-max flex h-full w-full items-center justify-between px-6 lg:px-8">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 sm:gap-3"
+          aria-label="Aeroconsult Home"
+        >
           <img
             src="/aeroconsult_logo.jpg"
             alt="Aeroconsult"
             className="h-10 w-10 rounded-full border border-[#99D2F2] object-cover shadow-sm"
           />
-          <span className="hidden text-xl font-black tracking-tight text-slate-900 md:inline">
+          <span className="text-xl font-black tracking-tight text-slate-900">
             AEROCONSULT LTD.
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="ml-auto flex items-center gap-8">
           {NAV_LINKS.map((item) => (
             <NavLink key={item.to} to={item.to} className={desktopLinkClass}>
               {item.label}
@@ -45,7 +50,7 @@ function PublicHeader() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="flex items-center gap-4">
           <Link
             to="/register"
             className="rounded-full bg-[#2095D3] px-6 py-2 font-medium text-white transition-transform hover:bg-[#1A7BB1] active:scale-90"
@@ -59,19 +64,20 @@ function PublicHeader() {
             Login
           </Link>
         </div>
+        </div>
+      </header>
 
-        <button
-          type="button"
-          aria-label={isMobileOpen ? 'Close menu' : 'Open menu'}
-          onClick={() => setIsMobileOpen((prev) => !prev)}
-          className="text-slate-700 md:hidden"
-        >
-          {isMobileOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
-        </button>
-      </div>
+      <button
+        type="button"
+        aria-label={isMobileOpen ? 'Close menu' : 'Open menu'}
+        onClick={() => setIsMobileOpen((prev) => !prev)}
+        className="fixed right-4 top-4 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#99D2F2] bg-white text-slate-700 shadow-lg md:hidden"
+      >
+        {isMobileOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+      </button>
 
       {isMobileOpen && (
-        <div className="border-t border-[#99D2F2] bg-white px-6 py-6 md:hidden">
+        <div className="fixed right-4 top-20 z-50 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-[#99D2F2] bg-white p-6 shadow-2xl md:hidden">
           <nav className="flex flex-col gap-4">
             {NAV_LINKS.map((item) => (
               <NavLink key={item.to} to={item.to} className={mobileLinkClass} onClick={() => setIsMobileOpen(false)}>
@@ -95,7 +101,7 @@ function PublicHeader() {
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }
 
