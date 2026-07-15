@@ -26,13 +26,15 @@ function PublicHeader() {
   return (
     <header className="fixed top-0 z-50 h-20 w-full border-b border-[#99D2F2] bg-white/90 backdrop-blur-md">
       <div className="container-max flex h-full w-full items-center justify-between px-6 lg:px-8">
-        <Link to="/" className="inline-flex items-center gap-3" aria-label="Aeroconsult Home">
+        <Link to="/" className="inline-flex items-center gap-2 sm:gap-3" aria-label="Aeroconsult Home">
           <img
             src="/aeroconsult_logo.jpg"
             alt="Aeroconsult"
             className="h-10 w-10 rounded-full border border-[#99D2F2] object-cover shadow-sm"
           />
-          <span className="text-xl font-black tracking-tight text-slate-900">AEROCONSULT LTD.</span>
+          <span className="hidden text-xl font-black tracking-tight text-slate-900 md:inline">
+            AEROCONSULT LTD.
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
