@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
@@ -12,6 +12,7 @@ const NAV_LINKS = [
 
 function PublicHeader() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [showMobileToggle, setShowMobileToggle] = useState(true);
 
   const desktopLinkClass = ({ isActive }) =>
     isActive
@@ -23,47 +24,84 @@ function PublicHeader() {
       ? 'text-[#2095D3] text-lg font-semibold'
       : 'text-slate-700 text-lg font-medium';
 
+  useEffect(() => {
+    if (window.innerWidth >= 768) {
+      setShowMobileToggle(false);
+      return undefined;
+    }
+
+    let hideTimer;
+    const showThenHide = () => {
+      setShowMobileToggle(true);
+      window.clearTimeout(hideTimer);
+      if (!isMobileOpen) {
+        hideTimer = window.setTimeout(() => {
+          setShowMobileToggle(false);
+        }, 2200);
+      }
+    };
+
+    const handleActivity = () => {
+      showThenHide();
+    };
+
+    showThenHide();
+
+    window.addEventListener('scroll', handleActivity, { passive: true });
+    window.addEventListener('touchstart', handleActivity, { passive: true });
+    window.addEventListener('keydown', handleActivity);
+
+    return () => {
+      window.clearTimeout(hideTimer);
+      window.removeEventListener('scroll', handleActivity);
+      window.removeEventListener('touchstart', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+    };
+  }, [isMobileOpen]);
+
   return (
     <>
       <header className="fixed top-0 z-50 hidden h-20 w-full border-b border-[#99D2F2] bg-white/90 backdrop-blur-md md:block">
         <div className="container-max flex h-full w-full items-center justify-between px-6 lg:px-8">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 sm:gap-3"
-          aria-label="Aeroconsult Home"
-        >
-          <img
-            src="/aeroconsult_logo.jpg"
-            alt="Aeroconsult"
-            className="h-10 w-10 rounded-full border border-[#99D2F2] object-cover shadow-sm"
-          />
-          <span className="text-xl font-black tracking-tight text-slate-900">
-            AEROCONSULT LTD.
-          </span>
-        </Link>
-
-        <nav className="ml-auto flex items-center gap-8">
-          {NAV_LINKS.map((item) => (
-            <NavLink key={item.to} to={item.to} className={desktopLinkClass}>
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-4">
           <Link
-            to="/register"
-            className="rounded-full bg-[#2095D3] px-6 py-2 font-medium text-white transition-transform hover:bg-[#1A7BB1] active:scale-90"
+            to="/"
+            className="inline-flex items-center gap-2 sm:gap-3"
+            aria-label="Aeroconsult Home"
           >
-            Register
+            <img
+              src="/aeroconsult_logo.jpg"
+              alt="Aeroconsult"
+              className="h-10 w-10 rounded-full border border-[#99D2F2] object-cover shadow-sm"
+            />
+            <span className="text-xl font-black tracking-tight text-slate-900">
+              AEROCONSULT LTD.
+            </span>
           </Link>
-          <Link
-            to="/login"
-            className="rounded-full border border-[#2095D3] px-6 py-2 font-medium text-[#2095D3] transition-colors hover:bg-[#2095D3] hover:text-white"
-          >
-            Login
-          </Link>
-        </div>
+
+          <div className="ml-auto flex items-center gap-10">
+            <nav className="flex items-center gap-8">
+              {NAV_LINKS.map((item) => (
+                <NavLink key={item.to} to={item.to} className={desktopLinkClass}>
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-4">
+              <Link
+                to="/register"
+                className="rounded-full bg-[#2095D3] px-6 py-2 font-medium text-white transition-transform hover:bg-[#1A7BB1] active:scale-90"
+              >
+                Register
+              </Link>
+              <Link
+                to="/login"
+                className="rounded-full border border-[#2095D3] px-6 py-2 font-medium text-[#2095D3] transition-colors hover:bg-[#2095D3] hover:text-white"
+              >
+                Login
+              </Link>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -71,7 +109,9 @@ function PublicHeader() {
         type="button"
         aria-label={isMobileOpen ? 'Close menu' : 'Open menu'}
         onClick={() => setIsMobileOpen((prev) => !prev)}
-        className="fixed right-4 top-4 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#99D2F2] bg-white text-slate-700 shadow-lg md:hidden"
+        className={`fixed right-4 top-4 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#99D2F2] bg-white text-slate-700 shadow-lg transition-all duration-200 md:hidden ${
+          showMobileToggle ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
+        }`}
       >
         {isMobileOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
       </button>
