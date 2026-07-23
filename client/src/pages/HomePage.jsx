@@ -12,12 +12,7 @@ import {
 import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
-
-const HERO_SLIDES = [
-  'https://images.unsplash.com/photo-1544476915-ed1370594142?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1529074963764-98f45c47344b?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?auto=format&fit=crop&w=1600&q=80',
-];
+import { HOME_FEATURE_IMAGE, HOME_HERO_SLIDES, HOME_UPCOMING_TRAINING_IMAGES } from '../data/images';
 
 const UPCOMING_TRAININGS = [
   {
@@ -29,7 +24,7 @@ const UPCOMING_TRAININGS = [
     description:
       'Foundational training preparing participants for a career as Flight Dispatchers/Flight Operations Officers, covering core technical and operational subjects.',
     image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuArF-3_t9TNzrIATQMxlv7cz0V3qvD1jnJC0s2_eBNytx6jpk0PTJlm92jui4uTWOC84hff9uj3K6ZaIoP-DagBrqrPibRrQVKoFVha5-5feia7eIIb_X2XVgQD_H0im_5Bjz9QJCemVtOGGHumQHCyIfCe6a-EajMB9apuZuDnoGl28FLTNJgR-OASDhaptXIUb0qf8aq6hh8fJfJOtAcWajZbPxkIBXlXmrrz2M4DB50ypHg3-sKPrsHZ-AnVeWwMIyBmu2uG0evM',
+      HOME_UPCOMING_TRAINING_IMAGES[0],
   },
   {
     title: 'Cabin Crew (Initial) Training (CCI)',
@@ -40,7 +35,7 @@ const UPCOMING_TRAININGS = [
     description:
       'Comprehensive initial training for aspiring cabin crew members, covering safety, emergency procedures, customer service, and aircraft-specific knowledge.',
     image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCD-q1gygpZVGEVU22F3cmEQak9b_h4apPW9hA9XPgyKYrbe0a3n-jS1L32yUcdXkHrwD8VFNLqrNPSNE5INXJ7f5gkVXmGJxcWVzyQ7R9mgS0N-TQvsQcKgArds-DzC70fhuo-sS9g522NXH7evDRn50sjN8qsIdPXvqKAkMqSztrXDRMqoZ0Qn-jZEgMYyERqcZkR6hls2zdibvUMiL38nZqm3RbcWMJArU6Q_ULKspJOVMsNd26KyJjt_IB3XXuQfJe9nlwyoYcB',
+      HOME_UPCOMING_TRAINING_IMAGES[1],
   },
   {
     title: 'Aircraft Maintenance Licence Preparatory Course (AMLPC) (A&P)',
@@ -51,7 +46,7 @@ const UPCOMING_TRAININGS = [
     description:
       'Extensive preparatory course for Aircraft Maintenance Licence (Airframe & Powerplant) covering all required EASA/NCAA modules.',
     image:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuB06V2eQJdYATqvCRvb0eyDw1FPMDsgY7qAd0H3EZ51buDEr2pnaJyN3l-rh_Wbnl9znfN6wsnq0Hx2EuSrXSPB-3f3dC7OC7EwGoPrd5CVdozy4Qx1d9RqRs0EzHTghr_0RfmaLw8JChCIzYYBEl3McbFdYiT93jj1qOam7CKrfxn3Xyo822qsms3S-X_KL1DwWKtLolzfY_HxajeT0e0GxmPrq4eiJ25CPRkB7c9qOpcr7eZQjdaOWuf4TWdfZVTixky2giDcbEn5',
+      HOME_UPCOMING_TRAINING_IMAGES[2],
   },
 ];
 
@@ -121,7 +116,7 @@ function HomePage() {
     const timer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
-          setActiveSlide((slide) => (slide + 1) % HERO_SLIDES.length);
+              setActiveSlide((slide) => (slide + 1) % HOME_HERO_SLIDES.length);
           return 1;
         }
         return Math.min(100, prev + progressStep);
@@ -132,7 +127,7 @@ function HomePage() {
   }, []);
 
   const heroStyle = useMemo(
-    () => ({ backgroundImage: `url(${HERO_SLIDES[activeSlide]})` }),
+    () => ({ backgroundImage: `url(${HOME_HERO_SLIDES[activeSlide]})` }),
     [activeSlide]
   );
 
@@ -218,7 +213,7 @@ function HomePage() {
           <div className="group relative">
             <div className="absolute -inset-4 rounded-xl bg-brand-accent/20 transition-colors group-hover:bg-brand-accent/30" />
             <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRNWrpb-xKo_-ynboDCjXmRwym7_4egU0z6L32Yn__6JpGhtyNvCuhWSKgnsKIXcW1WxWOZuZHKJxjVbKNQE2upj4rZwIK6LKfpmvi-55JpCX1UwUvwznYOeRtTiEPYNQ6rQTUW7YMIgWzMXkAsJs0pkMqJxo7BpaPf-Nix_igcl0dIuC5LmdUP-d9l4dMNf_Di1KnWVEKDwk74zK4jmPDfpUFcr6jxgAZkMkS_KM7g0VOs565-7pndDd6IOQBhEAZnTVIJTayxodu"
+              src={HOME_FEATURE_IMAGE}
               alt="Aviation professionals in a modern training hangar"
               className="relative h-[500px] w-full rounded-lg object-cover grayscale transition-all duration-700 hover:grayscale-0 shadow-2xl"
             />

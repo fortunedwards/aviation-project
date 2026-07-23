@@ -1,32 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { AVIATION_SIDE_PANEL_SLIDES } from '../data/images';
 
-export const DEFAULT_AVIATION_SLIDES = [
-  {
-    image:
-      'https://images.unsplash.com/photo-1503468120394-03d29a34a0bf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-    alt: 'Airline cockpit with pilots during flight',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1752579664702-e6609516e21a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-    alt: 'Professional aviation training classroom',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1775029324059-04bd762eba0d?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-    alt: 'Flight attendants working inside an aircraft cabin',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1757030689792-3fccb8813f8f?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-    alt: 'Workers repairing airport tarmac near an airplane at night',
-  },
-  {
-    image:
-      'https://images.unsplash.com/photo-1748362686556-3255add83eac?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
-    alt: 'Ground crew directing a plane on the tarmac',
-  },
-];
+export const DEFAULT_AVIATION_SLIDES = AVIATION_SIDE_PANEL_SLIDES;
 
 const AviationSidePanel = ({
   children,

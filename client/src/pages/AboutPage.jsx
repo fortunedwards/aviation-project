@@ -16,12 +16,7 @@ import {
 import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
-
-const HERO_SLIDES = [
-  'https://images.unsplash.com/photo-1544476915-ed1370594142?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1499678329028-101435549a4e?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1600&q=80',
-];
+import { ABOUT_HERO_SLIDES, ABOUT_IMAGE } from '../data/images';
 
 const CORE_IDENTITY = [
   {
@@ -137,7 +132,7 @@ function AboutPage() {
     const timer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
-          setActiveSlide((slide) => (slide + 1) % HERO_SLIDES.length);
+          setActiveSlide((slide) => (slide + 1) % ABOUT_HERO_SLIDES.length);
           return 1;
         }
         return Math.min(100, prev + progressStep);
@@ -148,7 +143,7 @@ function AboutPage() {
   }, []);
 
   const heroStyle = useMemo(
-    () => ({ backgroundImage: `url(${HERO_SLIDES[activeSlide]})` }),
+    () => ({ backgroundImage: `url(${ABOUT_HERO_SLIDES[activeSlide]})` }),
     [activeSlide]
   );
 
@@ -209,7 +204,7 @@ function AboutPage() {
           <div className="group relative">
             <div className="absolute -inset-4 rounded-xl bg-brand-accent/20 transition-colors group-hover:bg-brand-accent/30" />
             <img
-              src="https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=1200&q=80"
+              src={ABOUT_IMAGE}
               alt="Aeroconsult professionals"
               className="relative h-[520px] w-full rounded-lg object-cover grayscale transition-all duration-700 hover:grayscale-0 shadow-2xl"
             />

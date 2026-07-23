@@ -11,24 +11,7 @@ import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
 import coursesData from '../data/courses.json';
-
-const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1400&q=80',
-  'https://images.unsplash.com/photo-1499678329028-101435549a4e?auto=format&fit=crop&w=1400&q=80',
-  'https://images.unsplash.com/photo-1517479149777-5f3b1511d5ad?auto=format&fit=crop&w=1400&q=80',
-  'https://images.unsplash.com/photo-1529074963764-98f45c47344b?auto=format&fit=crop&w=1400&q=80',
-  'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=1400&q=80',
-  'https://images.unsplash.com/photo-1544476915-ed1370594142?auto=format&fit=crop&w=1400&q=80',
-];
-
-const SNEAK_PEEK_IMAGES = [
-  'https://images.unsplash.com/photo-1494412685616-a5d310fbb07d?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80',
-  'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80',
-];
+import { COURSE_DETAILS_HERO_IMAGES, COURSE_DETAILS_SNEAK_PEEK_IMAGES } from '../data/images';
 
 const normalizePrice = (price) => {
   if (typeof price === 'number') return `₦${price.toLocaleString()}`;
@@ -81,7 +64,7 @@ function CourseDetailsPage() {
     );
   }
 
-  const heroImage = HERO_IMAGES[courseIndex % HERO_IMAGES.length];
+  const heroImage = COURSE_DETAILS_HERO_IMAGES[courseIndex % COURSE_DETAILS_HERO_IMAGES.length];
   const enrolledCount = 120 + courseIndex * 17;
   const rating = Number(course.rating ?? 4.8);
   const keyPoints = (course.outline || []).slice(0, 6);
@@ -147,7 +130,7 @@ function CourseDetailsPage() {
                 {[0, 1, 2, 3].map((idx) => (
                   <img
                     key={`${course.slug}-preview-${idx}`}
-                    src={SNEAK_PEEK_IMAGES[(courseIndex + idx) % SNEAK_PEEK_IMAGES.length]}
+                    src={COURSE_DETAILS_SNEAK_PEEK_IMAGES[(courseIndex + idx) % COURSE_DETAILS_SNEAK_PEEK_IMAGES.length]}
                     alt={`${course.title} preview ${idx + 1}`}
                     className="h-36 w-full rounded-xl object-cover"
                   />

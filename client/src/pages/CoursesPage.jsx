@@ -5,15 +5,7 @@ import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
 import coursesData from '../data/courses.json';
-
-const COURSE_IMAGES = [
-  'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1499678329028-101435549a4e?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1517479149777-5f3b1511d5ad?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1529074963764-98f45c47344b?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1544476915-ed1370594142?auto=format&fit=crop&w=1200&q=80',
-];
+import { COURSE_CARD_IMAGES } from '../data/images';
 
 const PAGE_SIZE = 9;
 
@@ -145,7 +137,7 @@ function CoursesPage() {
                   const rating = Number(course.rating ?? 4.8);
                   const price = normalizePrice(course);
                   const duration = normalizeDuration(course);
-                  const image = COURSE_IMAGES[(currentPage * 10 + index) % COURSE_IMAGES.length];
+                  const image = COURSE_CARD_IMAGES[(currentPage * 10 + index) % COURSE_CARD_IMAGES.length];
 
                   return (
                     <article key={course.slug || `${course.title}-${index}`} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
