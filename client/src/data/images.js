@@ -1,3 +1,5 @@
+import homeFeatureImage from '../assets/images/home1.png';
+
 export const HOME_HERO_SLIDES = [
   'https://images.unsplash.com/photo-1569629743817-70d8db6c323b?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
   'https://images.unsplash.com/photo-1519666336592-e225a99dcd2f?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
@@ -11,7 +13,7 @@ export const HOME_UPCOMING_TRAINING_IMAGES = [
   'https://lh3.googleusercontent.com/aida-public/AB6AXuB06V2eQJdYATqvCRvb0eyDw1FPMDsgY7qAd0H3EZ51buDEr2pnaJyN3l-rh_Wbnl9znfN6wsnq0Hx2EuSrXSPB-3f3dC7OC7EwGoPrd5CVdozy4Qx1d9RqRs0EzHTghr_0RfmaLw8JChCIzYYBEl3McbFdYiT93jj1qOam7CKrfxn3Xyo822qsms3S-X_KL1DwWKtLolzfY_HxajeT0e0GxmPrq4eiJ25CPRkB7c9qOpcr7eZQjdaOWuf4TWdfZVTixky2giDcbEn5',
 ];
 
-export const HOME_FEATURE_IMAGE = 'client/src/assets/images/home1.png';
+export const HOME_FEATURE_IMAGE = homeFeatureImage;
 
 export const ABOUT_HERO_SLIDES = [
   'https://images.unsplash.com/photo-1544476915-ed1370594142?auto=format&fit=crop&w=1600&q=80',
