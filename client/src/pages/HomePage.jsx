@@ -201,8 +201,8 @@ function HomePage() {
             <p className="text-lg font-light leading-relaxed text-slate-600">
               We are a leading specialist aviation technical consultancy firm in Nigeria offering services in operations, engineering and management consulting to aviation and allied industries.
             </p>
-            <div className="border-l-8 border-brand-primary bg-slate-50 p-8 shadow-sm">
-              <p className="text-xl font-semibold italic text-brand-deep">
+            <div className="border-l-8 border-brand-primary bg-slate-50 p-5 shadow-sm sm:p-8">
+              <p className="text-base font-semibold italic text-brand-deep sm:text-xl">
                 "Approved by the Nigerian Civil Aviation Authority (NCAA) as an Approved Training Organisation (ATO) with Approval No: ATO/AA/002."
               </p>
             </div>
@@ -218,19 +218,19 @@ function HomePage() {
         </RevealSection>
       </section>
 
-      <section className="bg-brand-deep py-16 text-white md:py-24">
-        <RevealSection className="mx-auto grid max-w-7xl gap-px bg-white/10 px-8 md:grid-cols-2">
-          <article className="group bg-brand-deep p-8 transition-colors hover:bg-slate-900 sm:p-10 md:p-16">
-            <Eye className="mb-4 h-10 w-10 text-brand-accent sm:mb-6 sm:h-12 sm:w-12" />
-            <h3 className="mb-3 text-2xl font-bold tracking-tight sm:mb-6 sm:text-3xl">Our Vision</h3>
-            <p className="text-base leading-relaxed text-white/70 transition-colors group-hover:text-white sm:text-lg">
+      <section className="bg-brand-deep py-12 text-white md:py-24">
+        <RevealSection className="mx-auto grid max-w-7xl gap-4 bg-white/10 px-4 sm:px-6 md:grid-cols-2 md:gap-px md:px-8">
+          <article className="group bg-brand-deep px-5 py-5 transition-colors hover:bg-slate-900 sm:px-8 sm:py-10 md:p-16">
+            <Eye className="mb-3 h-8 w-8 text-brand-accent sm:mb-6 sm:h-12 sm:w-12" />
+            <h3 className="mb-2 text-xl font-bold tracking-tight sm:mb-6 sm:text-3xl">Our Vision</h3>
+            <p className="text-sm leading-relaxed text-white/70 transition-colors group-hover:text-white sm:text-lg">
               To be a world-class aviation service provider and training organization, being one of the best in Africa.
             </p>
           </article>
-          <article className="group border-l border-white/10 bg-brand-deep p-8 transition-colors hover:bg-slate-900 sm:p-10 md:p-16">
-            <Rocket className="mb-4 h-10 w-10 text-brand-accent sm:mb-6 sm:h-12 sm:w-12" />
-            <h3 className="mb-3 text-2xl font-bold tracking-tight sm:mb-6 sm:text-3xl">Our Mission</h3>
-            <p className="text-base leading-relaxed text-white/70 transition-colors group-hover:text-white sm:text-lg">
+          <article className="group bg-brand-deep px-5 py-5 transition-colors hover:bg-slate-900 sm:border-l sm:border-white/10 sm:px-8 sm:py-10 md:p-16">
+            <Rocket className="mb-3 h-8 w-8 text-brand-accent sm:mb-6 sm:h-12 sm:w-12" />
+            <h3 className="mb-2 text-xl font-bold tracking-tight sm:mb-6 sm:text-3xl">Our Mission</h3>
+            <p className="text-sm leading-relaxed text-white/70 transition-colors group-hover:text-white sm:text-lg">
               Pulling together the highest level of Aviation resources to sustain professional standards and professionalism in the entire Aviation Industry through training, promoting safety and quality for excellent services and global best practices.
             </p>
           </article>
