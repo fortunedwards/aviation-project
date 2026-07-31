@@ -212,7 +212,7 @@ function HomePage() {
             <img
               src={HOME_FEATURE_IMAGE}
               alt="Aviation professionals in a modern training hangar"
-              className="relative h-[500px] w-full object-cover transition-all duration-700 shadow-2xl md:grayscale md:hover:grayscale-0"
+              className="relative h-[500px] w-full object-cover transition-all duration-700 shadow-2xl"
             />
           </div>
         </RevealSection>
@@ -257,13 +257,13 @@ function HomePage() {
               <Link
                 key={course.title}
                 to={`/courses/${course.slug}`}
-                className="group block overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:shadow-2xl"
+                className="group block overflow-hidden rounded-none border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:shadow-2xl"
               >
-                <div className="relative h-64 overflow-hidden">
+                <div className="relative h-64 overflow-hidden rounded-none">
                   <img
                     src={course.image}
                     alt={course.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full rounded-none object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className={`absolute top-4 left-4 ${course.badgeTone} px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white`}>
                     {course.badge}
