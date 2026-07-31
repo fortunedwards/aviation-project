@@ -196,7 +196,7 @@ function HomePage() {
         <RevealSection className="mx-auto grid max-w-7xl items-center gap-20 md:grid-cols-2">
           <div className="space-y-8">
             <h2 className="font-display text-4xl font-black leading-tight text-brand-deep md:text-5xl">
-              Aeroconsult Ltd.
+              Welcome to <br /> Aeroconsult Ltd.
             </h2>
             <p className="text-lg font-light leading-relaxed text-slate-600">
               We are a leading specialist aviation technical consultancy firm in Nigeria offering services in operations, engineering and management consulting to aviation and allied industries.
