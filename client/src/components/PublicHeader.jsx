@@ -64,7 +64,7 @@ function PublicHeader() {
               }`}
             />
             <span
-              className={`hidden whitespace-nowrap text-lg font-black tracking-tight transition-colors duration-300 xl:inline xl:text-xl ${
+              className={`hidden whitespace-nowrap text-lg font-black tracking-tight transition-colors duration-300 2xl:inline 2xl:text-xl ${
                 isScrolled ? 'text-slate-900' : 'text-white'
               }`}
             >
