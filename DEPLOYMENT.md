@@ -7,6 +7,8 @@
 3. Point `DATABASE_URL` to your Neon PostgreSQL connection string.
 4. Set `FRONTEND_URL` to your Vercel domain so CORS and Socket.IO accept it.
 5. Keep `CLOUDINARY_URL` in Railway only. Do not expose it to the client.
+6. Set the Railway start command to `npm run start:railway` if you want course prices to sync from `client/src/data/courses.json` on every deploy/start.
+7. If you prefer a one-time manual sync, run `npm run migrate:courses` from the Railway shell instead.
 
 ## Database: Neon
 
