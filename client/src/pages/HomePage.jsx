@@ -290,10 +290,7 @@ function HomePage() {
           <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-brand-deep sm:mb-10 sm:text-4xl">
             Quality Policy
           </h2>
-          <p className="mx-auto max-w-2xl text-sm font-light italic leading-relaxed text-slate-700 sm:hidden">
-            Aeroconsult Limited is committed to high-quality aviation consultancy and training, meeting customer needs through relevant regulations and standards.
-          </p>
-          <p className="mx-auto hidden max-w-3xl text-base font-light italic leading-relaxed text-slate-700 sm:block sm:text-lg md:text-2xl">
+          <p className="mx-auto max-w-3xl text-sm font-light italic leading-relaxed text-slate-700 sm:text-lg md:text-2xl">
             "Aeroconsult Limited is committed to the delivery of high-quality products in its air transport consultancy, aviation training and our related business endeavours, that meet the needs and expectations of our customers by leveraging on relevant regulations and standards. We will continually strive to improve the quality of our delivered products as well as processes we use to fulfill those obligations."
           </p>
           <div className="mt-6 hidden items-center justify-center gap-4 sm:mt-12 sm:flex">
@@ -304,8 +301,8 @@ function HomePage() {
         </RevealSection>
       </section>
 
-      <section className="px-8 py-24">
-        <RevealSection className="relative mx-auto flex max-w-7xl flex-col items-center justify-between gap-12 overflow-hidden rounded-3xl bg-brand-deep p-12 md:flex-row md:p-20">
+      <section className="px-4 py-16 sm:px-8 sm:py-24">
+        <RevealSection className="relative mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 overflow-hidden rounded-none bg-brand-deep p-6 sm:p-8 md:flex-row md:gap-12 md:p-20">
           <div className="absolute -top-32 -right-32 h-64 w-64 rounded-full bg-brand-primary/20 blur-3xl" />
           <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-brand-accent/10 blur-2xl" />
 
@@ -324,13 +321,13 @@ function HomePage() {
             </ul>
             <Link
               to="/register"
-              className="inline-flex rounded-full bg-brand-primary px-12 py-5 font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-[#1A7BB1]"
+              className="inline-flex rounded-none bg-brand-primary px-8 py-4 text-sm font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-[#1A7BB1] sm:px-12 sm:py-5 sm:text-base"
             >
               Register For Courses
             </Link>
           </div>
 
-          <div className="relative z-10 grid grid-cols-2 gap-4">
+          <div className="relative z-10 grid grid-cols-2 gap-3 sm:gap-4">
             {[
               ['500+', 'Graduates'],
               ['20+', 'Experts'],
@@ -339,12 +336,16 @@ function HomePage() {
             ].map(([value, label], idx) => (
               <div
                 key={label}
-                className={`rounded-2xl border border-white/10 bg-white/5 p-8 text-center backdrop-blur-md ${
-                  idx % 2 ? 'mt-8' : ''
+                className={`rounded-none border border-white/10 bg-white/5 p-4 text-center backdrop-blur-md sm:p-6 md:p-8 ${
+                  idx % 2 ? 'mt-4 sm:mt-8' : ''
                 }`}
               >
-                <div className="mb-1 text-3xl font-black text-brand-accent">{value}</div>
-                <div className="text-xs font-bold uppercase tracking-tighter text-white/60">{label}</div>
+                <div className="mb-1 text-xl font-black leading-none text-brand-accent sm:text-2xl md:text-3xl">
+                  {value}
+                </div>
+                <div className="text-[10px] font-bold uppercase tracking-wide text-white/60 sm:text-xs sm:tracking-tighter">
+                  {label}
+                </div>
               </div>
             ))}
           </div>
