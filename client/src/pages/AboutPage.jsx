@@ -167,7 +167,7 @@ function AboutPage() {
                 Aeroconsult Ltd.
               </span>
             </h1>
-            <p className="max-w-3xl text-xl font-light tracking-wide text-white/90 md:text-2xl">
+            <p className="max-w-2xl text-base font-light leading-relaxed tracking-wide text-white/90 sm:text-lg md:text-xl lg:text-2xl">
               Explore our story, our core identity, what we offer and the amazing team that makes us who we are
             </p>
           </div>
@@ -186,27 +186,24 @@ function AboutPage() {
       <section className="bg-white py-32 px-container-padding">
         <RevealSection className="mx-auto grid max-w-7xl items-center gap-20 md:grid-cols-2">
           <div className="space-y-8">
-            <div className="inline-block border-l-4 border-brand-primary bg-brand-accent/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-brand-primary">
-              Our Story
-            </div>
             <h2 className="font-display text-4xl font-black leading-tight text-brand-deep md:text-5xl">
               Built on Aviation Excellence Since 1993
             </h2>
             <p className="text-lg font-light leading-relaxed text-slate-600">
               Incorporated on October 21, 1993, Aeroconsult Ltd. is a premier specialist aviation technical consultancy and training firm based in Nigeria. As a Company Limited by Shares, we have established ourselves as a leader in providing comprehensive solutions to the aviation and allied industries, including specialized services for Oil & Gas organizations.
             </p>
-            <div className="border-l-8 border-brand-primary bg-slate-50 p-8 shadow-sm">
-              <p className="text-xl font-semibold italic text-brand-deep">
+            <div className="border-l-8 border-brand-primary bg-slate-50 p-5 shadow-sm sm:p-8">
+              <p className="text-base font-semibold italic text-brand-deep sm:text-xl">
                 We operate as an Approved Training Organisation (ATO), holding NCAA Approval No: ATO/AA/002, and we are proud to be ISO 9001:2015 Certified (Certification No: QSCIPL-NIG/ARL-Q11102).
               </p>
             </div>
           </div>
           <div className="group relative">
-            <div className="absolute -inset-4 rounded-xl bg-brand-accent/20 transition-colors group-hover:bg-brand-accent/30" />
+            <div className="absolute -inset-4 bg-brand-accent/20 transition-colors group-hover:bg-brand-accent/30" />
             <img
               src={ABOUT_IMAGE}
               alt="Aeroconsult professionals"
-              className="relative h-[520px] w-full rounded-lg object-cover grayscale transition-all duration-700 hover:grayscale-0 shadow-2xl"
+              className="relative h-[500px] w-full object-cover transition-all duration-700 shadow-2xl"
             />
           </div>
         </RevealSection>
