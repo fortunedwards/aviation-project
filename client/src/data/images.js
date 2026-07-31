@@ -6,9 +6,9 @@ export const HOME_HERO_SLIDES = [
 ];
 
 export const HOME_UPCOMING_TRAINING_IMAGES = [
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuArF-3_t9TNzrIATQMxlv7cz0V3qvD1jnJC0s2_eBNytx6jpk0PTJlm92jui4uTWOC84hff9uj3K6ZaIoP-DagBrqrPibRrQVKoFVha5-5feia7eIIb_X2XVgQD_H0im_5Bjz9QJCemVtOGGHumQHCyIfCe6a-EajMB9apuZuDnoGl28FLTNJgR-OASDhaptXIUb0qf8aq6hh8fJfJOtAcWajZbPxkIBXlXmrrz2M4DB50ypHg3-sKPrsHZ-AnVeWwMIyBmu2uG0evM',
+  `${import.meta.env.BASE_URL}fdb.png`,
+  `${import.meta.env.BASE_URL}cabin.png`,
   'https://lh3.googleusercontent.com/aida-public/AB6AXuCD-q1gygpZVGEVU22F3cmEQak9b_h4apPW9hA9XPgyKYrbe0a3n-jS1L32yUcdXkHrwD8VFNLqrNPSNE5INXJ7f5gkVXmGJxcWVzyQ7R9mgS0N-TQvsQcKgArds-DzC70fhuo-sS9g522NXH7evDRn50sjN8qsIdPXvqKAkMqSztrXDRMqoZ0Qn-jZEgMYyERqcZkR6hls2zdibvUMiL38nZqm3RbcWMJArU6Q_ULKspJOVMsNd26KyJjt_IB3XXuQfJe9nlwyoYcB',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuB06V2eQJdYATqvCRvb0eyDw1FPMDsgY7qAd0H3EZ51buDEr2pnaJyN3l-rh_Wbnl9znfN6wsnq0Hx2EuSrXSPB-3f3dC7OC7EwGoPrd5CVdozy4Qx1d9RqRs0EzHTghr_0RfmaLw8JChCIzYYBEl3McbFdYiT93jj1qOam7CKrfxn3Xyo822qsms3S-X_KL1DwWKtLolzfY_HxajeT0e0GxmPrq4eiJ25CPRkB7c9qOpcr7eZQjdaOWuf4TWdfZVTixky2giDcbEn5',
 ];
 
 export const HOME_FEATURE_IMAGE = `${import.meta.env.BASE_URL}home1.png`;
