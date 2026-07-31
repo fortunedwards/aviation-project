@@ -195,11 +195,8 @@ function HomePage() {
       <section className="bg-white py-32 px-container-padding">
         <RevealSection className="mx-auto grid max-w-7xl items-center gap-20 md:grid-cols-2">
           <div className="space-y-8">
-            <div className="inline-block border-l-4 border-brand-primary bg-brand-accent/10 px-4 py-1 text-xs font-bold uppercase tracking-widest text-brand-primary">
-              Our Authority
-            </div>
             <h2 className="font-display text-4xl font-black leading-tight text-brand-deep md:text-5xl">
-              Welcome to <br /> Aeroconsult Ltd.
+              Aeroconsult Ltd.
             </h2>
             <p className="text-lg font-light leading-relaxed text-slate-600">
               We are a leading specialist aviation technical consultancy firm in Nigeria offering services in operations, engineering and management consulting to aviation and allied industries.
