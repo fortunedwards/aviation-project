@@ -7,7 +7,9 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "migrate:audit-logs": "node migrate_audit_logs.js",
-    "migrate:chat": "node migrate_chat_schema.js"
+    "migrate:chat": "node migrate_chat_schema.js",
+    "migrate:chat:v2": "node migrate_chat_v2_schema.js",
+    "migrate:courses": "node migrate_course_prices.js"
   },
   "keywords": [],
   "author": "",
