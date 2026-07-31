@@ -80,7 +80,7 @@ const TEAM_MEMBERS = [
     image: `${import.meta.env.BASE_URL}ariyo.png`,
   },
   {
-    name: 'Engr. Ameh Joseph Alhaji',
+    name: 'Engr. Ameh Joseph A.',
     role: 'Quality Manager',
     image: `${import.meta.env.BASE_URL}ameh.png`,
   },
@@ -267,7 +267,14 @@ function AboutPage() {
 
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 sm:gap-8">
             {TEAM_MEMBERS.map((member) => (
-              <article key={member.role} className="group text-center">
+              <article
+                key={member.role}
+                className={`group text-center ${
+                  member.name === 'Engr. B.A. Obadofin'
+                    ? 'col-span-2 justify-self-center max-w-[11rem] sm:col-span-1 sm:max-w-none'
+                    : ''
+                }`}
+              >
                 <div className="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full bg-[#2095D3]/10 transition-colors group-hover:bg-[#2095D3]/20 sm:mb-6 sm:h-32 sm:w-32">
                   <img
                     src={member.image}
