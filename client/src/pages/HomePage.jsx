@@ -218,19 +218,19 @@ function HomePage() {
         </RevealSection>
       </section>
 
-      <section className="bg-brand-deep py-24 text-white">
+      <section className="bg-brand-deep py-16 text-white md:py-24">
         <RevealSection className="mx-auto grid max-w-7xl gap-px bg-white/10 px-8 md:grid-cols-2">
-          <article className="group bg-brand-deep p-16 transition-colors hover:bg-slate-900">
-            <Eye className="mb-6 h-12 w-12 text-brand-accent" />
-            <h3 className="mb-6 text-3xl font-bold tracking-tight">Our Vision</h3>
-            <p className="text-lg leading-relaxed text-white/70 transition-colors group-hover:text-white">
+          <article className="group bg-brand-deep p-8 transition-colors hover:bg-slate-900 sm:p-10 md:p-16">
+            <Eye className="mb-4 h-10 w-10 text-brand-accent sm:mb-6 sm:h-12 sm:w-12" />
+            <h3 className="mb-3 text-2xl font-bold tracking-tight sm:mb-6 sm:text-3xl">Our Vision</h3>
+            <p className="text-base leading-relaxed text-white/70 transition-colors group-hover:text-white sm:text-lg">
               To be a world-class aviation service provider and training organization, being one of the best in Africa.
             </p>
           </article>
-          <article className="group border-l border-white/10 bg-brand-deep p-16 transition-colors hover:bg-slate-900">
-            <Rocket className="mb-6 h-12 w-12 text-brand-accent" />
-            <h3 className="mb-6 text-3xl font-bold tracking-tight">Our Mission</h3>
-            <p className="text-lg leading-relaxed text-white/70 transition-colors group-hover:text-white">
+          <article className="group border-l border-white/10 bg-brand-deep p-8 transition-colors hover:bg-slate-900 sm:p-10 md:p-16">
+            <Rocket className="mb-4 h-10 w-10 text-brand-accent sm:mb-6 sm:h-12 sm:w-12" />
+            <h3 className="mb-3 text-2xl font-bold tracking-tight sm:mb-6 sm:text-3xl">Our Mission</h3>
+            <p className="text-base leading-relaxed text-white/70 transition-colors group-hover:text-white sm:text-lg">
               Pulling together the highest level of Aviation resources to sustain professional standards and professionalism in the entire Aviation Industry through training, promoting safety and quality for excellent services and global best practices.
             </p>
           </article>
