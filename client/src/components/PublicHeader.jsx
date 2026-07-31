@@ -13,16 +13,34 @@ const NAV_LINKS = [
 function PublicHeader() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showMobileToggle, setShowMobileToggle] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const desktopLinkClass = ({ isActive }) =>
-    isActive
-      ? 'border-b-2 border-[#2095D3] pb-1 font-medium text-[#2095D3] transition-colors duration-200 hover:text-[#1A7BB1]'
-      : 'font-medium text-slate-600 transition-colors duration-200 hover:text-[#1A7BB1]';
+    isScrolled
+      ? isActive
+        ? 'border-b-2 border-[#2095D3] pb-1 font-medium text-[#2095D3] transition-colors duration-200 hover:text-[#1A7BB1]'
+        : 'font-medium text-slate-600 transition-colors duration-200 hover:text-[#1A7BB1]'
+      : isActive
+        ? 'border-b-2 border-white pb-1 font-medium text-white transition-colors duration-200 hover:text-white/80'
+        : 'font-medium text-white/90 transition-colors duration-200 hover:text-white';
 
   const mobileLinkClass = ({ isActive }) =>
     isActive
       ? 'text-[#2095D3] text-lg font-semibold'
       : 'text-slate-700 text-lg font-medium';
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 16);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     if (window.innerWidth >= 768) {
@@ -61,7 +79,13 @@ function PublicHeader() {
 
   return (
     <>
-      <header className="fixed top-0 z-50 hidden h-20 w-full border-b border-[#99D2F2] bg-white/90 backdrop-blur-md md:block">
+      <header
+        className={`fixed top-0 z-50 hidden h-20 w-full border-b backdrop-blur-md transition-all duration-300 md:block ${
+          isScrolled
+            ? 'border-[#99D2F2] bg-white/90 shadow-sm'
+            : 'border-transparent bg-transparent'
+        }`}
+      >
         <div className="container-max flex h-full w-full items-center justify-between px-6 lg:px-8">
           <Link
             to="/"
@@ -71,9 +95,15 @@ function PublicHeader() {
             <img
               src="/aeroconsult_logo.jpg"
               alt="Aeroconsult"
-              className="h-10 w-10 rounded-full border border-[#99D2F2] object-cover shadow-sm"
+              className={`h-10 w-10 rounded-full object-cover shadow-sm transition-colors duration-300 ${
+                isScrolled ? 'border border-[#99D2F2]' : 'border border-white/40'
+              }`}
             />
-            <span className="text-xl font-black tracking-tight text-slate-900">
+            <span
+              className={`text-xl font-black tracking-tight transition-colors duration-300 ${
+                isScrolled ? 'text-slate-900' : 'text-white'
+              }`}
+            >
               AEROCONSULT LTD.
             </span>
           </Link>
@@ -90,13 +120,21 @@ function PublicHeader() {
             <div className="flex items-center gap-4">
               <Link
                 to="/register"
-                className="rounded-full bg-[#2095D3] px-6 py-2 font-medium text-white transition-transform hover:bg-[#1A7BB1] active:scale-90"
+                className={`rounded-full px-6 py-2 font-medium transition-transform active:scale-90 ${
+                  isScrolled
+                    ? 'bg-[#2095D3] text-white hover:bg-[#1A7BB1]'
+                    : 'border border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20'
+                }`}
               >
                 Register
               </Link>
               <Link
                 to="/login"
-                className="rounded-full border border-[#2095D3] px-6 py-2 font-medium text-[#2095D3] transition-colors hover:bg-[#2095D3] hover:text-white"
+                className={`rounded-full px-6 py-2 font-medium transition-colors ${
+                  isScrolled
+                    ? 'border border-[#2095D3] text-[#2095D3] hover:bg-[#2095D3] hover:text-white'
+                    : 'border border-white/30 text-white hover:bg-white/15'
+                }`}
               >
                 Login
               </Link>
