@@ -106,15 +106,6 @@ function App() {
                 />
               }
             />
-            <Route
-              path="/contact-support"
-              element={
-                <PublicPlaceholderPage
-                  title="Contact Support"
-                  description="This page will provide support contacts and direct communication channels for Aeroconsult inquiries."
-                />
-              }
-            />
             <Route path="/login" element={<Login setUser={setUser} />} />
 
             {/* STUDENT PORTAL ROUTE */}

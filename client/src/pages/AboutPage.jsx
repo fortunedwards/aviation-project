@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
   ArrowRight,
-  Briefcase,
   Compass,
   GraduationCap,
   Lightbulb,
@@ -50,11 +48,6 @@ const OFFERINGS = [
     title: 'Professional Development',
     icon: Medal,
     text: 'A vast catalog of courses covering Quality Management Systems (QMS), Safety Management Systems (SMS), Airworthiness, Airline Management, and Human Factors.',
-  },
-  {
-    title: 'Consultancy Services',
-    icon: Briefcase,
-    text: 'Expert engineering and management consulting tailored to aviation business needs.',
   },
   {
     title: 'Bespoke Solutions',
@@ -296,12 +289,13 @@ function AboutPage() {
           <p className="mt-5 text-lg text-white/80">
             We'd love to connect with you and answer any questions you might have
           </p>
-          <Link
-            to="/contact-support"
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event('open_support_chat'))}
             className="mt-8 inline-flex items-center gap-2 rounded-full bg-brand-primary px-8 py-3 font-bold text-white transition-all hover:scale-105 hover:bg-[#1A7BB1]"
           >
             Contact Support <ArrowRight className="h-4 w-4" />
-          </Link>
+          </button>
         </RevealSection>
       </section>
 
