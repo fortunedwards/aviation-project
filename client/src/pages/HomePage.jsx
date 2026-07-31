@@ -309,18 +309,20 @@ function HomePage() {
             <h2 className="mb-4 text-2xl font-black text-brand-deep sm:text-4xl">
               Student Testimonials
             </h2>
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Voices of Success</p>
+            <p className="hidden text-xs font-bold uppercase tracking-widest text-slate-500 sm:block">
+              Voices of Success
+            </p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
             {REVIEWS.map((review) => (
               <article
                 key={review.name}
-                className="relative rounded-3xl border border-slate-100 bg-white p-10 italic text-slate-600 shadow-sm"
+                className="relative rounded-3xl border border-slate-100 bg-white p-6 italic text-slate-600 shadow-sm sm:p-10"
               >
                 <span className="absolute -top-6 left-10 text-6xl text-brand-accent/30">"</span>
                 <p>{review.quote}</p>
-                <div className="mt-8 flex items-center gap-4 not-italic">
+                <div className="mt-6 flex items-center gap-4 not-italic sm:mt-8">
                   <div className="h-12 w-12 rounded-full bg-brand-accent/20" />
                   <div>
                     <p className="font-bold text-brand-deep">{review.name}</p>
