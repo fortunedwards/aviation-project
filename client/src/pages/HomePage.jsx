@@ -301,14 +301,16 @@ function HomePage() {
         </RevealSection>
       </section>
 
-      <section className="px-4 py-16 sm:px-8 sm:py-24">
-        <RevealSection className="relative mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 overflow-hidden rounded-none bg-brand-deep p-6 sm:p-8 md:flex-row md:gap-12 md:p-20">
+      <section className="px-4 py-14 sm:px-8 sm:py-24">
+        <RevealSection className="relative mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-brand-deep p-5 sm:p-8 md:flex-row md:gap-12 md:p-20">
           <div className="absolute -top-32 -right-32 h-64 w-64 rounded-full bg-brand-primary/20 blur-3xl" />
           <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-brand-accent/10 blur-2xl" />
 
           <div className="relative z-10 max-w-xl">
-            <h2 className="mb-8 text-4xl font-black text-white md:text-5xl">Ready to Elevate Your Career?</h2>
-            <ul className="mb-10 space-y-4">
+            <h2 className="mb-5 text-3xl font-black text-white sm:mb-8 sm:text-4xl md:text-5xl">
+              Ready to Elevate Your Career?
+            </h2>
+            <ul className="mb-7 space-y-3 sm:mb-10 sm:space-y-4">
               <li className="flex items-center gap-4 text-white/80">
                 <CheckCircle2 className="h-5 w-5 text-brand-accent" /> NCAA Accredited Training Modules
               </li>
@@ -327,7 +329,7 @@ function HomePage() {
             </Link>
           </div>
 
-          <div className="relative z-10 grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="relative z-10 grid grid-cols-2 gap-2 sm:gap-4">
             {[
               ['500+', 'Graduates'],
               ['20+', 'Experts'],
@@ -336,14 +338,14 @@ function HomePage() {
             ].map(([value, label], idx) => (
               <div
                 key={label}
-                className={`rounded-none border border-white/10 bg-white/5 p-4 text-center backdrop-blur-md sm:p-6 md:p-8 ${
+                className={`rounded-none border border-white/10 bg-white/5 p-3 text-center backdrop-blur-md sm:p-6 md:p-8 ${
                   idx % 2 ? 'mt-4 sm:mt-8' : ''
                 }`}
               >
-                <div className="mb-1 text-xl font-black leading-none text-brand-accent sm:text-2xl md:text-3xl">
+                <div className="mb-1 text-lg font-black leading-none text-brand-accent sm:text-2xl md:text-3xl">
                   {value}
                 </div>
-                <div className="text-[10px] font-bold uppercase tracking-wide text-white/60 sm:text-xs sm:tracking-tighter">
+                <div className="text-[9px] font-bold uppercase tracking-wide text-white/60 sm:text-xs sm:tracking-tighter">
                   {label}
                 </div>
               </div>
