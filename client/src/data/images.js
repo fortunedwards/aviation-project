@@ -14,9 +14,9 @@ export const HOME_UPCOMING_TRAINING_IMAGES = [
 export const HOME_FEATURE_IMAGE = `${import.meta.env.BASE_URL}home1.png`;
 
 export const ABOUT_HERO_SLIDES = [
-  'https://images.unsplash.com/photo-1544476915-ed1370594142?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1499678329028-101435549a4e?auto=format&fit=crop&w=1600&q=80',
-  'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1600&q=80',
+  `${import.meta.env.BASE_URL}home1.png`,
+  `${import.meta.env.BASE_URL}cabin.png`,
+  `${import.meta.env.BASE_URL}fdb.png`,
 ];
 
 export const ABOUT_IMAGE = HOME_FEATURE_IMAGE;
