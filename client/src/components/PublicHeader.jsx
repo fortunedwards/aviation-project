@@ -12,7 +12,6 @@ const NAV_LINKS = [
 
 function PublicHeader() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [showMobileToggle, setShowMobileToggle] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const desktopLinkClass = ({ isActive }) =>
@@ -42,51 +41,16 @@ function PublicHeader() {
     };
   }, []);
 
-  useEffect(() => {
-    if (window.innerWidth >= 768) {
-      setShowMobileToggle(false);
-      return undefined;
-    }
-
-    let hideTimer;
-    const showThenHide = () => {
-      setShowMobileToggle(true);
-      window.clearTimeout(hideTimer);
-      if (!isMobileOpen) {
-        hideTimer = window.setTimeout(() => {
-          setShowMobileToggle(false);
-        }, 2200);
-      }
-    };
-
-    const handleActivity = () => {
-      showThenHide();
-    };
-
-    showThenHide();
-
-    window.addEventListener('scroll', handleActivity, { passive: true });
-    window.addEventListener('touchstart', handleActivity, { passive: true });
-    window.addEventListener('keydown', handleActivity);
-
-    return () => {
-      window.clearTimeout(hideTimer);
-      window.removeEventListener('scroll', handleActivity);
-      window.removeEventListener('touchstart', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
-    };
-  }, [isMobileOpen]);
-
   return (
     <>
       <header
-        className={`fixed top-0 z-50 hidden h-20 w-full border-b backdrop-blur-md transition-all duration-300 md:block ${
+        className={`fixed top-0 z-50 h-16 w-full border-b backdrop-blur-md transition-all duration-300 md:h-20 ${
           isScrolled
             ? 'border-[#99D2F2] bg-white/90 shadow-sm'
             : 'border-transparent bg-transparent'
         }`}
       >
-        <div className="container-max flex h-full w-full items-center justify-between px-6 lg:px-8">
+        <div className="container-max flex h-full w-full items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             to="/"
             className="inline-flex items-center gap-2 sm:gap-3"
@@ -108,7 +72,7 @@ function PublicHeader() {
             </span>
           </Link>
 
-          <div className="ml-auto flex items-center gap-10">
+          <div className="ml-auto hidden items-center gap-10 md:flex">
             <nav className="flex items-center gap-8">
               {NAV_LINKS.map((item) => (
                 <NavLink key={item.to} to={item.to} className={desktopLinkClass}>
@@ -140,22 +104,28 @@ function PublicHeader() {
               </Link>
             </div>
           </div>
+
+          <button
+            type="button"
+            aria-label={isMobileOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setIsMobileOpen((prev) => !prev)}
+            className={`inline-flex h-11 w-11 items-center justify-center rounded-full border bg-transparent shadow-none transition-colors duration-200 md:hidden ${
+              isScrolled
+                ? 'border-transparent text-slate-700 hover:bg-slate-100'
+                : 'border-white/30 text-white hover:bg-white/10'
+            }`}
+          >
+            {isMobileOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+          </button>
         </div>
       </header>
 
-      <button
-        type="button"
-        aria-label={isMobileOpen ? 'Close menu' : 'Open menu'}
-        onClick={() => setIsMobileOpen((prev) => !prev)}
-        className={`fixed right-4 top-4 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#99D2F2] bg-white text-slate-700 shadow-lg transition-all duration-200 md:hidden ${
-          showMobileToggle ? 'pointer-events-auto translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
-        }`}
-      >
-        {isMobileOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
-      </button>
-
       {isMobileOpen && (
-        <div className="fixed right-4 top-20 z-50 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-[#99D2F2] bg-white p-6 shadow-2xl md:hidden">
+        <div
+          className={`fixed right-4 z-50 w-[calc(100%-2rem)] max-w-sm rounded-3xl border border-[#99D2F2] bg-white p-6 shadow-2xl md:hidden ${
+            isScrolled ? 'top-20' : 'top-16'
+          }`}
+        >
           <nav className="flex flex-col gap-4">
             {NAV_LINKS.map((item) => (
               <NavLink key={item.to} to={item.to} className={mobileLinkClass} onClick={() => setIsMobileOpen(false)}>
