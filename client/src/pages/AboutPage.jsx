@@ -78,12 +78,12 @@ const TEAM_MEMBERS = [
     role: 'Accountable Manager',
   },
   {
-    name: 'Engr. Teku Silvanus',
-    role: 'Director, Quality',
+    name: 'Engr. Ameh Joseph Alhaji',
+    role: 'Quality Manager',
   },
   {
-    name: 'ABC XYZ',
-    role: 'Chief Ground Instructor',
+    name: 'Mr. Adebanji M. Oladimeji',
+    role: 'Head of Accounting',
   },
 ];
 
