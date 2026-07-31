@@ -158,7 +158,7 @@ function HomePage() {
                 Aeroconsult Ltd.
               </span>
             </h1>
-            <p className="max-w-2xl text-xl font-light tracking-wide text-white/90 md:text-2xl">
+            <p className="max-w-2xl text-base font-light leading-relaxed tracking-wide text-white/90 sm:text-lg md:text-xl lg:text-2xl">
               Pioneering Excellence in Aviation Technical Consultancy & Professional Training.
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-4">
@@ -297,59 +297,6 @@ function HomePage() {
             <div className="h-px w-12 bg-brand-primary" />
             <span className="text-xs font-bold uppercase tracking-widest text-brand-deep">Certified Standards</span>
             <div className="h-px w-12 bg-brand-primary" />
-          </div>
-        </RevealSection>
-      </section>
-
-      <section className="px-4 py-14 sm:px-8 sm:py-24">
-        <RevealSection className="relative mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 overflow-hidden rounded-3xl bg-brand-deep p-5 sm:p-8 md:flex-row md:gap-12 md:p-20">
-          <div className="absolute -top-32 -right-32 h-64 w-64 rounded-full bg-brand-primary/20 blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-brand-accent/10 blur-2xl" />
-
-          <div className="relative z-10 max-w-xl">
-            <h2 className="mb-5 text-3xl font-black text-white sm:mb-8 sm:text-4xl md:text-5xl">
-              Ready to Elevate Your Career?
-            </h2>
-            <ul className="mb-7 space-y-3 sm:mb-10 sm:space-y-4">
-              <li className="flex items-center gap-4 text-white/80">
-                <CheckCircle2 className="h-5 w-5 text-brand-accent" /> NCAA Accredited Training Modules
-              </li>
-              <li className="flex items-center gap-4 text-white/80">
-                <CheckCircle2 className="h-5 w-5 text-brand-accent" /> Expert Industry Consultant Instructors
-              </li>
-              <li className="flex items-center gap-4 text-white/80">
-                <CheckCircle2 className="h-5 w-5 text-brand-accent" /> State-of-the-art Learning Facilities
-              </li>
-            </ul>
-            <Link
-              to="/register"
-              className="inline-flex rounded-none bg-brand-primary px-8 py-4 text-sm font-bold text-white shadow-xl transition-all hover:scale-105 hover:bg-[#1A7BB1] sm:px-12 sm:py-5 sm:text-base"
-            >
-              Register For Courses
-            </Link>
-          </div>
-
-          <div className="relative z-10 grid grid-cols-2 gap-2 sm:gap-4">
-            {[
-              ['500+', 'Graduates'],
-              ['20+', 'Experts'],
-              ['15+', 'Courses'],
-              ['ATO', 'Certified'],
-            ].map(([value, label], idx) => (
-              <div
-                key={label}
-                className={`rounded-none border border-white/10 bg-white/5 p-3 text-center backdrop-blur-md sm:p-6 md:p-8 ${
-                  idx % 2 ? 'mt-4 sm:mt-8' : ''
-                }`}
-              >
-                <div className="mb-1 text-lg font-black leading-none text-brand-accent sm:text-2xl md:text-3xl">
-                  {value}
-                </div>
-                <div className="text-[9px] font-bold uppercase tracking-wide text-white/60 sm:text-xs sm:tracking-tighter">
-                  {label}
-                </div>
-              </div>
-            ))}
           </div>
         </RevealSection>
       </section>
