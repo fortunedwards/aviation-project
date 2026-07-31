@@ -241,7 +241,9 @@ function HomePage() {
         <RevealSection className="mx-auto max-w-7xl">
           <div className="mb-16 flex items-end justify-between">
             <div>
-              <h2 className="mb-4 text-4xl font-black text-brand-deep">Upcoming Training</h2>
+              <h2 className="mb-4 text-2xl font-black text-brand-deep sm:text-4xl">
+                Upcoming Training
+              </h2>
               <div className="h-1 w-24 bg-brand-primary" />
             </div>
             <Link
@@ -304,7 +306,9 @@ function HomePage() {
       <section className="px-8 py-32">
         <RevealSection className="mx-auto max-w-7xl">
           <div className="mb-20 text-center">
-            <h2 className="mb-4 text-4xl font-black text-brand-deep">Student Testimonials</h2>
+            <h2 className="mb-4 text-2xl font-black text-brand-deep sm:text-4xl">
+              Student Testimonials
+            </h2>
             <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Voices of Success</p>
           </div>
 
