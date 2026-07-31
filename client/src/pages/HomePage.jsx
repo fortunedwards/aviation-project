@@ -211,11 +211,11 @@ function HomePage() {
             </div>
           </div>
           <div className="group relative">
-            <div className="absolute -inset-4 rounded-xl bg-brand-accent/20 transition-colors group-hover:bg-brand-accent/30" />
+            <div className="absolute -inset-4 bg-brand-accent/20 transition-colors group-hover:bg-brand-accent/30" />
             <img
               src={HOME_FEATURE_IMAGE}
               alt="Aviation professionals in a modern training hangar"
-              className="relative h-[500px] w-full rounded-lg object-cover grayscale transition-all duration-700 hover:grayscale-0 shadow-2xl"
+              className="relative h-[500px] w-full object-cover grayscale transition-all duration-700 hover:grayscale-0 shadow-2xl"
             />
           </div>
         </RevealSection>
