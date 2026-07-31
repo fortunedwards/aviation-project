@@ -10,7 +10,6 @@ import {
   Mouse,
   ShieldCheck,
   Target,
-  UserCircle2,
   Wrench,
 } from 'lucide-react';
 import PublicHeader from '../components/PublicHeader';
@@ -68,22 +67,27 @@ const TEAM_MEMBERS = [
   {
     name: 'Engr. B.A. Obadofin',
     role: 'Chief Executive Officer',
+    image: `${import.meta.env.BASE_URL}obadofin.png`,
   },
   {
     name: 'Capt. Dele Ore',
     role: 'Director, Business & Strategy',
+    image: `${import.meta.env.BASE_URL}delores.png`,
   },
   {
     name: 'Engr. C.O. Ayo-Ariyo',
     role: 'Accountable Manager',
+    image: `${import.meta.env.BASE_URL}ariyo.png`,
   },
   {
     name: 'Engr. Ameh Joseph Alhaji',
     role: 'Quality Manager',
+    image: `${import.meta.env.BASE_URL}ameh.png`,
   },
   {
     name: 'Mr. Adebanji M. Oladimeji',
     role: 'Head of Accounting',
+    image: `${import.meta.env.BASE_URL}oladimeji.png`,
   },
 ];
 
@@ -264,8 +268,12 @@ function AboutPage() {
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 sm:gap-8">
             {TEAM_MEMBERS.map((member) => (
               <article key={member.role} className="group text-center">
-                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-[#2095D3]/10 text-[#2095D3] transition-colors group-hover:bg-[#2095D3]/20 sm:mb-6 sm:h-32 sm:w-32">
-                  <UserCircle2 className="h-10 w-10 sm:h-14 sm:w-14" />
+                <div className="mx-auto mb-4 h-24 w-24 overflow-hidden rounded-full bg-[#2095D3]/10 transition-colors group-hover:bg-[#2095D3]/20 sm:mb-6 sm:h-32 sm:w-32">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <h5 className="text-sm font-bold text-[#2B2A4C] sm:text-lg">{member.name}</h5>
                 <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#2095D3]">{member.role}</p>
