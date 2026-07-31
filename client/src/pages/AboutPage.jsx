@@ -184,7 +184,7 @@ function AboutPage() {
       </section>
 
       <section className="bg-white py-32 px-container-padding">
-        <RevealSection className="mx-auto grid max-w-7xl items-center gap-20 md:grid-cols-2">
+        <RevealSection className="mx-auto grid max-w-7xl items-center gap-20 lg:grid-cols-2">
           <div className="space-y-8">
             <h2 className="font-display text-4xl font-black leading-tight text-brand-deep md:text-5xl">
               Built on Aviation Excellence Since 1993
@@ -198,12 +198,12 @@ function AboutPage() {
               </p>
             </div>
           </div>
-          <div className="group relative">
+          <div className="group relative hidden lg:block">
             <div className="absolute -inset-4 bg-brand-accent/20 transition-colors group-hover:bg-brand-accent/30" />
             <img
               src={ABOUT_IMAGE}
               alt="Aeroconsult professionals"
-              className="relative h-[500px] w-full object-cover transition-all duration-700 shadow-2xl"
+              className="relative h-[500px] w-full object-cover grayscale transition-all duration-700 hover:grayscale-0 shadow-2xl"
             />
           </div>
         </RevealSection>
