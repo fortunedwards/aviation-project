@@ -209,65 +209,65 @@ function AboutPage() {
         </RevealSection>
       </section>
 
-      <section className="bg-[#99D2F2]/15 px-8 py-24">
+      <section className="bg-[#99D2F2]/15 px-4 py-14 sm:px-8 sm:py-24">
         <RevealSection className="mx-auto max-w-7xl">
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3 sm:gap-8">
             {CORE_IDENTITY.map((item) => (
               <article
                 key={item.title}
-                className="rounded-2xl bg-white p-10 text-slate-600 shadow-sm transition-shadow duration-300 hover:shadow-md"
+                className="rounded-2xl bg-white p-6 text-slate-600 shadow-sm transition-shadow duration-300 hover:shadow-md sm:p-10"
               >
-                <div className="mb-8 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2095D3] to-[#45A1D6] text-white">
-                  <item.icon className="h-8 w-8" />
+                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2095D3] to-[#45A1D6] text-white sm:mb-8 sm:h-16 sm:w-16">
+                  <item.icon className="h-6 w-6 sm:h-8 sm:w-8" />
                 </div>
-                <h3 className="mb-4 text-2xl font-black text-brand-deep">{item.title}</h3>
-                <p className="text-base leading-8 text-slate-600">{item.text}</p>
+                <h3 className="mb-3 text-lg font-black text-brand-deep sm:mb-4 sm:text-2xl">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-slate-600 sm:text-base sm:leading-8">{item.text}</p>
               </article>
             ))}
           </div>
         </RevealSection>
       </section>
 
-      <section className="bg-white py-32 px-container-padding">
+      <section className="bg-white px-4 py-16 sm:px-container-padding sm:py-32">
         <RevealSection className="mx-auto max-w-7xl">
-          <div className="mb-14">
-            <h2 className="mb-4 text-4xl font-black text-brand-deep">What We Offer</h2>
+          <div className="mb-10 sm:mb-14">
+            <h2 className="mb-4 text-2xl font-black text-brand-deep sm:text-4xl">What We Offer</h2>
             <div className="h-1 w-24 bg-brand-primary" />
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 sm:gap-6">
             {OFFERINGS.map((item, index) => (
               <article
                 key={item.title}
-                className={`rounded-2xl border border-slate-100 bg-slate-50 p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
+                className={`rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-8 ${
                   index === OFFERINGS.length - 1 ? 'md:col-span-2 md:mx-auto md:max-w-2xl' : ''
                 }`}
               >
-                <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-white text-brand-primary shadow-sm">
+                <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white text-brand-primary shadow-sm sm:mb-4 sm:h-11 sm:w-11">
                   <item.icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-xl font-bold text-brand-deep">{item.title}</h3>
-                <p className="mt-3 leading-8 text-slate-600">{item.text}</p>
+                <h3 className="text-lg font-bold text-brand-deep sm:text-xl">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 sm:mt-3 sm:text-base sm:leading-8">{item.text}</p>
               </article>
             ))}
           </div>
         </RevealSection>
       </section>
 
-      <section className="border-t border-[#99D2F2]/20 bg-white px-8 py-24">
+      <section className="border-t border-[#99D2F2]/20 bg-white px-4 py-16 sm:px-8 sm:py-24">
         <RevealSection className="mx-auto max-w-7xl">
-          <div className="mb-20 text-center">
-            <h2 className="mb-4 text-4xl font-black text-brand-deep">Our Amazing Team</h2>
+          <div className="mb-12 text-center sm:mb-20">
+            <h2 className="mb-4 text-2xl font-black text-brand-deep sm:text-4xl">Our Amazing Team</h2>
             <p className="text-slate-500">Meet the professionals driving our standards and impact.</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 sm:gap-8">
             {TEAM_MEMBERS.map((member) => (
               <article key={member.role} className="group text-center">
-                <div className="mx-auto mb-6 flex h-32 w-32 items-center justify-center rounded-full bg-[#2095D3]/10 text-[#2095D3] transition-colors group-hover:bg-[#2095D3]/20">
-                  <UserCircle2 className="h-14 w-14" />
+                <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-[#2095D3]/10 text-[#2095D3] transition-colors group-hover:bg-[#2095D3]/20 sm:mb-6 sm:h-32 sm:w-32">
+                  <UserCircle2 className="h-10 w-10 sm:h-14 sm:w-14" />
                 </div>
-                <h5 className="text-lg font-bold text-[#2B2A4C]">{member.name}</h5>
+                <h5 className="text-sm font-bold text-[#2B2A4C] sm:text-lg">{member.name}</h5>
                 <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-[#2095D3]">{member.role}</p>
               </article>
             ))}
