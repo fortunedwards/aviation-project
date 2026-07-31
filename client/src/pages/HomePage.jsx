@@ -212,7 +212,7 @@ function HomePage() {
             <img
               src={HOME_FEATURE_IMAGE}
               alt="Aviation professionals in a modern training hangar"
-              className="relative h-[500px] w-full object-cover grayscale transition-all duration-700 hover:grayscale-0 shadow-2xl"
+              className="relative h-[500px] w-full object-cover transition-all duration-700 shadow-2xl md:grayscale md:hover:grayscale-0"
             />
           </div>
         </RevealSection>
