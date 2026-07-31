@@ -283,15 +283,20 @@ function HomePage() {
         </RevealSection>
       </section>
 
-      <section className="relative overflow-hidden py-32">
+      <section className="relative overflow-hidden py-14 md:py-32">
         <div className="absolute inset-0 origin-right translate-y-20 skew-y-3 bg-brand-primary opacity-5" />
-        <RevealSection className="relative z-10 mx-auto max-w-4xl px-8 text-center">
-          <ShieldCheck className="mx-auto mb-8 h-16 w-16 text-brand-primary" />
-          <h2 className="mb-10 text-4xl font-black uppercase tracking-tight text-brand-deep">Quality Policy</h2>
-          <p className="text-2xl font-light italic leading-relaxed text-slate-700">
+        <RevealSection className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6 md:px-8">
+          <ShieldCheck className="mx-auto mb-4 h-10 w-10 text-brand-primary sm:mb-8 sm:h-16 sm:w-16" />
+          <h2 className="mb-4 text-2xl font-black uppercase tracking-tight text-brand-deep sm:mb-10 sm:text-4xl">
+            Quality Policy
+          </h2>
+          <p className="mx-auto max-w-2xl text-sm font-light italic leading-relaxed text-slate-700 sm:hidden">
+            Aeroconsult Limited is committed to high-quality aviation consultancy and training, meeting customer needs through relevant regulations and standards.
+          </p>
+          <p className="mx-auto hidden max-w-3xl text-base font-light italic leading-relaxed text-slate-700 sm:block sm:text-lg md:text-2xl">
             "Aeroconsult Limited is committed to the delivery of high-quality products in its air transport consultancy, aviation training and our related business endeavours, that meet the needs and expectations of our customers by leveraging on relevant regulations and standards. We will continually strive to improve the quality of our delivered products as well as processes we use to fulfill those obligations."
           </p>
-          <div className="mt-12 flex items-center justify-center gap-4">
+          <div className="mt-6 hidden items-center justify-center gap-4 sm:mt-12 sm:flex">
             <div className="h-px w-12 bg-brand-primary" />
             <span className="text-xs font-bold uppercase tracking-widest text-brand-deep">Certified Standards</span>
             <div className="h-px w-12 bg-brand-primary" />
