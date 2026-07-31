@@ -233,13 +233,8 @@ function AboutPage() {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 sm:gap-6">
-            {OFFERINGS.map((item, index) => (
-              <article
-                key={item.title}
-                className={`rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-8 ${
-                  index === OFFERINGS.length - 1 ? 'md:col-span-2 md:mx-auto md:max-w-2xl' : ''
-                }`}
-              >
+            {OFFERINGS.map((item) => (
+              <article key={item.title} className="rounded-2xl border border-slate-100 bg-slate-50 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg sm:p-8">
                 <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white text-brand-primary shadow-sm sm:mb-4 sm:h-11 sm:w-11">
                   <item.icon className="h-5 w-5" />
                 </div>
