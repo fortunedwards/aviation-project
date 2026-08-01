@@ -5,7 +5,7 @@ import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
 import coursesData from '../data/courses.json';
-import { COURSE_CARD_IMAGES } from '../data/images';
+import { COURSE_DETAILS_HERO_IMAGES } from '../data/images';
 
 const PAGE_SIZE = 9;
 
@@ -137,7 +137,12 @@ function CoursesPage() {
                   const rating = Number(course.rating ?? 4.8);
                   const price = normalizePrice(course);
                   const duration = normalizeDuration(course);
-                  const image = COURSE_CARD_IMAGES[(currentPage * 10 + index) % COURSE_CARD_IMAGES.length];
+                  const courseIndex = courses.findIndex((item) => item.slug === course.slug);
+                  const image =
+                    COURSE_DETAILS_HERO_IMAGES[
+                      (courseIndex >= 0 ? courseIndex : (currentPage * PAGE_SIZE + index)) %
+                        COURSE_DETAILS_HERO_IMAGES.length
+                    ];
 
                   return (
                     <article key={course.slug || `${course.title}-${index}`} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
