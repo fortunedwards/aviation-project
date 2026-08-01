@@ -3,6 +3,7 @@ import {
   BookOpen,
   CheckCircle2,
   Clock3,
+  ArrowLeft,
   FolderKanban,
   Star,
   Users,
@@ -92,8 +93,9 @@ function CourseDetailsPage() {
           <button
             type="button"
             onClick={goBackToCourses}
-            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-white transition hover:text-[#99D2F2]"
           >
+            <ArrowLeft className="h-4 w-4" />
             Back to Courses
           </button>
 
@@ -101,13 +103,11 @@ function CourseDetailsPage() {
             <h1 className="max-w-4xl text-4xl font-black tracking-tight text-white sm:text-5xl">{course.title}</h1>
             <Link
               to={`/register?courseSlug=${course.slug}`}
-              className="inline-flex items-center justify-center rounded-xl bg-[#2095D3] px-8 py-4 text-base font-black text-white transition hover:bg-[#1A7BB1]"
+              className="hidden items-center justify-center rounded-xl bg-[#2095D3] px-8 py-4 text-base font-black text-white transition hover:bg-[#1A7BB1] md:inline-flex"
             >
               Enroll Now
             </Link>
           </div>
-
-          <p className="mt-5 max-w-4xl text-lg text-white/80">{course.course_description}</p>
 
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white">
@@ -124,6 +124,13 @@ function CourseDetailsPage() {
           <div className="mt-10 overflow-hidden rounded-2xl border border-white/10">
             <img src={heroImage} alt={course.title} className="h-[320px] w-full object-cover md:h-[420px]" />
           </div>
+
+          <Link
+            to={`/register?courseSlug=${course.slug}`}
+            className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#2095D3] px-8 py-4 text-base font-black text-white transition hover:bg-[#1A7BB1] md:hidden"
+          >
+            Enroll Now
+          </Link>
         </div>
       </section>
 
