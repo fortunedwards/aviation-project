@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const db = require('./config/db');
 
-const coursesPath = path.join(__dirname, '..', 'client', 'src', 'data', 'courses.json');
+const coursesPath = path.join(__dirname, 'data', 'courses.json');
 
 async function main() {
   const raw = fs.readFileSync(coursesPath, 'utf8');
