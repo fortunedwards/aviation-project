@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const db = require('./config/db');
+const { buildTitleResolver, normalizeTitle } = require('./course_title_aliases');
 
 const coursesPath = path.join(__dirname, 'data', 'courses.json');
 
@@ -8,6 +9,8 @@ async function main() {
   const raw = fs.readFileSync(coursesPath, 'utf8');
   const parsed = JSON.parse(raw);
   const frontendCourses = Array.isArray(parsed.courses) ? parsed.courses : [];
+  const frontendByTitle = new Map(frontendCourses.map((course) => [normalizeTitle(course.title), course]));
+  const resolveFrontendTitle = buildTitleResolver(frontendCourses.map((course) => course.title));
 
   const client = await db.connect();
 
@@ -30,39 +33,48 @@ async function main() {
       ORDER BY created_at ASC, id ASC
     `);
 
-    if (courseResult.rows.length !== frontendCourses.length) {
-      throw new Error(
-        `Course count mismatch: frontend has ${frontendCourses.length}, database has ${courseResult.rows.length}.`
-      );
-    }
-
     await client.query('BEGIN');
     try {
-      for (let index = 0; index < frontendCourses.length; index += 1) {
-        const frontendCourse = frontendCourses[index];
-        const dbCourse = courseResult.rows[index];
+      const unmatched = [];
+      let updatedCount = 0;
+
+      for (const dbCourse of courseResult.rows) {
+        const matchedTitle = resolveFrontendTitle(dbCourse.title);
+        if (!matchedTitle) {
+          unmatched.push(dbCourse.title);
+          continue;
+        }
+
+        const frontendCourse = frontendByTitle.get(normalizeTitle(matchedTitle));
+        if (!frontendCourse) {
+          unmatched.push(dbCourse.title);
+          continue;
+        }
 
         if (columns.has('category')) {
           await client.query(
             'UPDATE courses SET title = $1, category = $2, course_fee = $3 WHERE id = $4',
-            [
-              frontendCourse.title,
-              frontendCourse.category || dbCourse.category || null,
-              Number(frontendCourse.price ?? 0),
-              dbCourse.id,
-            ]
+            [matchedTitle, frontendCourse.category || dbCourse.category || null, Number(frontendCourse.price ?? 0), dbCourse.id]
           );
         } else {
           await client.query('UPDATE courses SET title = $1, course_fee = $2 WHERE id = $3', [
-            frontendCourse.title,
+            matchedTitle,
             Number(frontendCourse.price ?? 0),
             dbCourse.id,
           ]);
         }
+
+        updatedCount += 1;
       }
 
       await client.query('COMMIT');
-      console.log(`Synced ${frontendCourses.length} courses from the frontend catalog.`);
+      console.log(`Updated ${updatedCount} course rows from the frontend catalog.`);
+      if (unmatched.length > 0) {
+        console.warn(`Skipped ${unmatched.length} database titles that do not map to the frontend catalog:`);
+        for (const title of unmatched) {
+          console.warn(`- ${title}`);
+        }
+      }
     } catch (error) {
       await client.query('ROLLBACK');
       throw error;
