@@ -1,4 +1,4 @@
-﻿import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   BookOpen,
   CheckCircle2,
@@ -11,7 +11,7 @@ import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
 import coursesData from '../data/courses.json';
-import { COURSE_DETAILS_HERO_IMAGES, COURSE_DETAILS_SNEAK_PEEK_IMAGES } from '../data/images';
+import { COURSE_DETAILS_HERO_IMAGES } from '../data/images';
 
 const normalizePrice = (price) => {
   if (typeof price === 'number') return `₦${price.toLocaleString()}`;
@@ -41,6 +41,7 @@ const isPaidRegistrationCourse = (course) => {
 };
 
 function CourseDetailsPage() {
+  const navigate = useNavigate();
   const { slug } = useParams();
   const courses = Array.isArray(coursesData?.courses) ? coursesData.courses : [];
   const courseIndex = courses.findIndex((item) => item.slug === slug);
@@ -77,6 +78,10 @@ function CourseDetailsPage() {
     window.dispatchEvent(new Event('open_support_chat'));
   };
 
+  const goBackToCourses = () => {
+    navigate('/courses');
+  };
+
   return (
     <div className="bg-white text-[#2B2A4C]">
       <PublicHeader />
@@ -84,7 +89,15 @@ function CourseDetailsPage() {
       <section className="relative overflow-hidden bg-[#2B2A4C] px-6 pb-16 pt-36 lg:px-12">
         <div className="pointer-events-none absolute -left-16 top-10 h-72 w-72 rounded-full bg-[#2095D3]/20 blur-3xl" />
         <div className="container-max relative z-10 mx-auto">
-          <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <button
+            type="button"
+            onClick={goBackToCourses}
+            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+          >
+            Back to Courses
+          </button>
+
+          <div className="mt-5 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <h1 className="max-w-4xl text-4xl font-black tracking-tight text-white sm:text-5xl">{course.title}</h1>
             <Link
               to={`/register?courseSlug=${course.slug}`}
@@ -122,20 +135,6 @@ function CourseDetailsPage() {
               <p className="mt-4 leading-8 text-slate-600">
                 {course.course_description} This program combines practical exposure, technical depth, and industry-focused guidance to help participants confidently apply their knowledge in real aviation operations.
               </p>
-            </article>
-
-            <article className="mt-12">
-              <h3 className="text-2xl font-black text-[#2B2A4C]">Sneak Peak</h3>
-              <div className="mt-5 grid grid-cols-2 gap-4">
-                {[0, 1, 2, 3].map((idx) => (
-                  <img
-                    key={`${course.slug}-preview-${idx}`}
-                    src={COURSE_DETAILS_SNEAK_PEEK_IMAGES[(courseIndex + idx) % COURSE_DETAILS_SNEAK_PEEK_IMAGES.length]}
-                    alt={`${course.title} preview ${idx + 1}`}
-                    className="h-36 w-full rounded-xl object-cover"
-                  />
-                ))}
-              </div>
             </article>
 
             <article className="mt-12">
