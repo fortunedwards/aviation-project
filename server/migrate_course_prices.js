@@ -3,12 +3,18 @@ const path = require('path');
 const db = require('./config/db');
 
 const coursesPath = path.join(__dirname, 'data', 'courses.json');
+const toSlug = (value) =>
+  String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 
 async function main() {
   const raw = fs.readFileSync(coursesPath, 'utf8');
   const parsed = JSON.parse(raw);
   const courses = Array.isArray(parsed.courses) ? parsed.courses : [];
-  const priceByTitle = new Map(courses.map((course) => [course.title, course.price]));
+  const priceBySlug = new Map(courses.map((course) => [course.slug || toSlug(course.title), course.price]));
+  const titleToSlug = new Map(courses.map((course) => [String(course.title || '').toLowerCase(), course.slug || toSlug(course.title)]));
 
   const client = await db.connect();
   try {
@@ -25,13 +31,22 @@ async function main() {
     }
 
     const courseResult = await client.query('SELECT id, title FROM courses');
-    const updates = courseResult.rows
-      .map((row) => ({
-        id: row.id,
-        title: row.title,
-        price: priceByTitle.get(row.title),
-      }))
-      .filter((row) => typeof row.price === 'number');
+    const matchedRows = courseResult.rows
+      .map((row) => {
+        const normalizedTitle = String(row.title || '').toLowerCase();
+        const slug = toSlug(row.title);
+        const mappedSlug = priceBySlug.has(slug) ? slug : titleToSlug.get(normalizedTitle);
+
+        return {
+          id: row.id,
+          title: row.title,
+          slug: mappedSlug || slug,
+          price: priceBySlug.get(mappedSlug || slug),
+        };
+      });
+
+    const updates = matchedRows.filter((row) => typeof row.price === 'number');
+    const unmatched = matchedRows.filter((row) => typeof row.price !== 'number');
 
     if (updates.length === 0) {
       console.log('No matching courses found to update.');
@@ -47,6 +62,9 @@ async function main() {
 
     await client.query('COMMIT');
     console.log(`Updated ${updates.length} course records.`);
+    if (unmatched.length > 0) {
+      console.log(`Skipped ${unmatched.length} unmatched course records.`);
+    }
   } catch (error) {
     try {
       await client.query('ROLLBACK');
