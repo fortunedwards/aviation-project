@@ -1,5 +1,5 @@
-﻿import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronDown, Clock3, Search, Star } from 'lucide-react';
 import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
@@ -22,11 +22,15 @@ const normalizePrice = (course) => {
 };
 
 function CoursesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [courses, setCourses] = useState([]);
-  const [queryInput, setQueryInput] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All courses');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [queryInput, setQueryInput] = useState(() => searchParams.get('q') || '');
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') || '');
+  const [selectedCategory, setSelectedCategory] = useState(() => searchParams.get('category') || 'All courses');
+  const [visibleCount, setVisibleCount] = useState(() => {
+    const page = Number.parseInt(searchParams.get('page') || '1', 10);
+    return Math.max(PAGE_SIZE, (Number.isNaN(page) ? 1 : page) * PAGE_SIZE);
+  });
 
   useEffect(() => {
     setCourses(Array.isArray(coursesData?.courses) ? coursesData.courses : []);
@@ -51,30 +55,65 @@ function CoursesPage() {
     });
   }, [courses, searchTerm, selectedCategory]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredCourses.length / PAGE_SIZE));
+  const visibleCourses = useMemo(() => {
+    return filteredCourses.slice(0, visibleCount);
+  }, [filteredCourses, visibleCount]);
 
-  const pagedCourses = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return filteredCourses.slice(start, start + PAGE_SIZE);
-  }, [filteredCourses, currentPage]);
+  const updateUrlState = (nextCategory, nextQuery, nextVisibleCount) => {
+    const params = new URLSearchParams();
+
+    if (nextCategory && nextCategory !== 'All courses') {
+      params.set('category', nextCategory);
+    }
+
+    if (nextQuery) {
+      params.set('q', nextQuery);
+    }
+
+    const page = Math.max(1, Math.ceil(nextVisibleCount / PAGE_SIZE));
+    if (page > 1) {
+      params.set('page', String(page));
+    }
+
+    setSearchParams(params, { replace: true });
+  };
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCategory, searchTerm]);
+    const page = Number.parseInt(searchParams.get('page') || '1', 10);
+    const nextVisibleCount = Math.max(PAGE_SIZE, (Number.isNaN(page) ? 1 : page) * PAGE_SIZE);
+    const nextQuery = searchParams.get('q') || '';
+    const nextCategory = searchParams.get('category') || 'All courses';
 
-  useEffect(() => {
-    if (currentPage > totalPages) setCurrentPage(totalPages);
-  }, [currentPage, totalPages]);
+    setQueryInput(nextQuery);
+    setSearchTerm(nextQuery);
+    setSelectedCategory(nextCategory);
+    setVisibleCount(nextVisibleCount);
+  }, [searchParams]);
 
   const handleSearch = () => {
-    setSearchTerm(queryInput);
+    const nextQuery = queryInput.trim();
+    setSearchTerm(nextQuery);
+    setVisibleCount(PAGE_SIZE);
+    updateUrlState(selectedCategory, nextQuery, PAGE_SIZE);
+  };
+
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+    setVisibleCount(PAGE_SIZE);
+    updateUrlState(value, searchTerm.trim(), PAGE_SIZE);
+  };
+
+  const handleLoadMore = () => {
+    const nextVisibleCount = Math.min(visibleCount + PAGE_SIZE, filteredCourses.length);
+    setVisibleCount(nextVisibleCount);
+    updateUrlState(selectedCategory, searchTerm.trim(), nextVisibleCount);
   };
 
   return (
     <div className="bg-white text-[#2B2A4C]">
       <PublicHeader />
 
-      <section className="relative overflow-hidden bg-[#2B2A4C] px-6 pb-16 pt-28 lg:px-12 sm:pb-20 sm:pt-36">
+      <section className="relative overflow-hidden bg-[#2B2A4C] px-6 pb-16 pt-28 sm:pb-20 sm:pt-36 lg:px-12">
         <div className="pointer-events-none absolute -left-20 top-14 h-72 w-72 rounded-full bg-[#2095D3]/20 blur-3xl" />
         <div className="pointer-events-none absolute right-10 top-20 h-56 w-56 rotate-12 rounded-[36px] border border-white/10 bg-white/5" />
         <div className="pointer-events-none absolute bottom-6 right-24 h-40 w-40 rounded-full border border-[#45A1D6]/25" />
@@ -84,14 +123,14 @@ function CoursesPage() {
             Explore Our Training Programs
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-white/80 sm:mt-5 sm:text-base md:text-lg">
-            Discover comprehensive  training courses designed to elevate your aviation skills.
+            Discover comprehensive training courses designed to elevate your aviation skills.
           </p>
 
           <div className="mx-auto mt-8 flex w-full max-w-4xl flex-col gap-3 rounded-2xl border border-white/10 bg-white/10 p-2.5 backdrop-blur-sm md:mt-10 md:flex-row md:items-center sm:p-3">
             <div className="relative md:w-56">
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={(e) => handleCategoryChange(e.target.value)}
                 className="w-full appearance-none rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 pr-10 text-sm text-white outline-none sm:px-4 sm:py-3"
               >
                 {categories.map((cat) => (
@@ -128,20 +167,30 @@ function CoursesPage() {
 
       <section className="bg-white px-6 py-16 lg:px-12">
         <div className="container-max mx-auto">
-          {pagedCourses.length === 0 ? (
+          <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-semibold text-slate-600">
+              {filteredCourses.length === 0
+                ? 'Showing 0 courses'
+                : `Showing 1–${Math.min(visibleCourses.length, filteredCourses.length)} of ${filteredCourses.length} courses`}
+            </p>
+            {searchTerm || selectedCategory !== 'All courses' ? (
+              <p className="text-sm text-slate-500">Filters active</p>
+            ) : null}
+          </div>
+
+          {visibleCourses.length === 0 ? (
             <p className="text-center text-slate-500">No courses found.</p>
           ) : (
             <>
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
-                {pagedCourses.map((course, index) => {
+                {visibleCourses.map((course, index) => {
                   const rating = Number(course.rating ?? 4.8);
                   const price = normalizePrice(course);
                   const duration = normalizeDuration(course);
                   const courseIndex = courses.findIndex((item) => item.slug === course.slug);
                   const image =
                     COURSE_DETAILS_HERO_IMAGES[
-                      (courseIndex >= 0 ? courseIndex : (currentPage * PAGE_SIZE + index)) %
-                        COURSE_DETAILS_HERO_IMAGES.length
+                      (courseIndex >= 0 ? courseIndex : index) % COURSE_DETAILS_HERO_IMAGES.length
                     ];
 
                   return (
@@ -191,23 +240,17 @@ function CoursesPage() {
                 })}
               </div>
 
-              <div className="mt-12 flex items-center justify-center gap-3">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                  const active = page === currentPage;
-                  return (
-                    <button
-                      key={page}
-                      type="button"
-                      onClick={() => setCurrentPage(page)}
-                      className={`h-10 w-10 rounded-full text-sm font-semibold transition ${
-                        active ? 'bg-[#2B2A4C] text-white' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  );
-                })}
-              </div>
+              {visibleCount < filteredCourses.length ? (
+                <div className="mt-12 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={handleLoadMore}
+                    className="inline-flex items-center justify-center rounded-xl bg-[#2B2A4C] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#1f1e3c]"
+                  >
+                    Load More
+                  </button>
+                </div>
+              ) : null}
             </>
           )}
         </div>
