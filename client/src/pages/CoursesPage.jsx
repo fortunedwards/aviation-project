@@ -74,25 +74,25 @@ function CoursesPage() {
     <div className="bg-white text-[#2B2A4C]">
       <PublicHeader />
 
-      <section className="relative overflow-hidden bg-[#2B2A4C] px-6 pb-20 pt-36 lg:px-12">
+      <section className="relative overflow-hidden bg-[#2B2A4C] px-6 pb-16 pt-28 lg:px-12 sm:pb-20 sm:pt-36">
         <div className="pointer-events-none absolute -left-20 top-14 h-72 w-72 rounded-full bg-[#2095D3]/20 blur-3xl" />
         <div className="pointer-events-none absolute right-10 top-20 h-56 w-56 rotate-12 rounded-[36px] border border-white/10 bg-white/5" />
         <div className="pointer-events-none absolute bottom-6 right-24 h-40 w-40 rounded-full border border-[#45A1D6]/25" />
 
         <div className="container-max relative z-10 mx-auto text-center">
-          <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl">
+          <h1 className="text-3xl font-black tracking-tight text-white sm:text-5xl">
             Explore Our Training Programs
           </h1>
-          <p className="mx-auto mt-5 max-w-3xl text-lg text-white/80">
+          <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-white/80 sm:mt-5 sm:text-base md:text-lg">
             Discover comprehensive  training courses designed to elevate your aviation skills.
           </p>
 
-          <div className="mx-auto mt-10 flex w-full max-w-4xl flex-col gap-3 rounded-2xl border border-white/10 bg-white/10 p-3 backdrop-blur-sm md:flex-row md:items-center">
+          <div className="mx-auto mt-8 flex w-full max-w-4xl flex-col gap-3 rounded-2xl border border-white/10 bg-white/10 p-2.5 backdrop-blur-sm md:mt-10 md:flex-row md:items-center sm:p-3">
             <div className="relative md:w-56">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full appearance-none rounded-xl border border-white/15 bg-white/10 px-4 py-3 pr-10 text-sm text-white outline-none"
+                className="w-full appearance-none rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 pr-10 text-sm text-white outline-none sm:px-4 sm:py-3"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat} className="text-slate-900">
@@ -111,14 +111,14 @@ function CoursesPage() {
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 type="text"
                 placeholder="Search training programs"
-                className="w-full rounded-xl border border-white/15 bg-white/10 py-3 pl-10 pr-4 text-sm text-white placeholder:text-white/60 outline-none"
+                className="w-full rounded-xl border border-white/15 bg-white/10 py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-white/60 outline-none sm:py-3"
               />
             </div>
 
             <button
               type="button"
               onClick={handleSearch}
-              className="rounded-xl bg-[#2095D3] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#1A7BB1]"
+              className="rounded-xl bg-[#2095D3] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#1A7BB1] sm:px-6 sm:py-3"
             >
               Search
             </button>
