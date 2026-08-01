@@ -145,7 +145,12 @@ function CoursesPage() {
                     ];
 
                   return (
-                    <article key={course.slug || `${course.title}-${index}`} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+                    <Link
+                      key={course.slug || `${course.title}-${index}`}
+                      to={`/courses/${course.slug}`}
+                      className="group block rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                      aria-label={`View details for ${course.title || 'course'}`}
+                    >
                       <img
                         src={image}
                         alt={course.title || 'Course'}
@@ -153,7 +158,9 @@ function CoursesPage() {
                       />
 
                       <div className="px-1 pb-2 pt-5">
-                        <h3 className="line-clamp-2 text-xl font-bold text-[#2B2A4C]">{course.title || 'Untitled Course'}</h3>
+                        <h3 className="line-clamp-2 text-xl font-bold text-[#2B2A4C] transition group-hover:text-[#2095D3]">
+                          {course.title || 'Untitled Course'}
+                        </h3>
                         <p className="mt-2 line-clamp-3 text-sm leading-7 text-slate-600">
                           {course.course_description || 'Comprehensive aviation program tailored for practical industry readiness.'}
                         </p>
@@ -174,15 +181,12 @@ function CoursesPage() {
 
                         <div className="mt-5 flex items-center justify-between">
                           <p className="text-lg font-black text-[#2B2A4C]">₦{price.toLocaleString()}</p>
-                          <Link
-                            to={`/courses/${course.slug}`}
-                            className="rounded-lg bg-[#2B2A4C] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1f1e3c]"
-                          >
+                          <span className="rounded-lg bg-[#2B2A4C] px-4 py-2 text-sm font-semibold text-white transition group-hover:bg-[#1f1e3c]">
                             View More
-                          </Link>
+                          </span>
                         </div>
                       </div>
-                    </article>
+                    </Link>
                   );
                 })}
               </div>
