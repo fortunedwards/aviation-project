@@ -12,7 +12,7 @@ import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
 import coursesData from '../data/courses.json';
-import { COURSE_DETAILS_HERO_IMAGES } from '../data/images';
+import { getCourseHeroImage } from '../data/images';
 
 const normalizePrice = (price) => {
   if (typeof price === 'number') return `₦${price.toLocaleString()}`;
@@ -66,7 +66,7 @@ function CourseDetailsPage() {
     );
   }
 
-  const heroImage = COURSE_DETAILS_HERO_IMAGES[courseIndex % COURSE_DETAILS_HERO_IMAGES.length];
+  const heroImage = getCourseHeroImage(course, courseIndex);
   const enrolledCount = 120 + courseIndex * 17;
   const rating = Number(course.rating ?? 4.8);
   const keyPoints = (course.outline || []).slice(0, 6);

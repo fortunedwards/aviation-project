@@ -39,6 +39,33 @@ export const COURSE_DETAILS_HERO_IMAGES = [
   'https://images.unsplash.com/photo-1544476915-ed1370594142?auto=format&fit=crop&w=1400&q=80',
 ];
 
+const normalizeTitle = (value) =>
+  String(value ?? '')
+    .normalize('NFKD')
+    .replace(/[’'`]/g, '')
+    .replace(/[–—]/g, '-')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const COURSE_IMAGE_OVERRIDES = new Map([
+  ['airworthiness course awc', `${import.meta.env.BASE_URL}awc.png`],
+  ['aircraft maintenance planning and control ampc', `${import.meta.env.BASE_URL}ampc.png`],
+  ['aviation stores management asm', `${import.meta.env.BASE_URL}asm.png`],
+  ['airline management am', `${import.meta.env.BASE_URL}am.png`],
+  ['quality management systems for airlines qms', `${import.meta.env.BASE_URL}qms.png`],
+  ['aircraft maintenance management amm', `${import.meta.env.BASE_URL}amm.png`],
+]);
+
+export const getCourseHeroImage = (course, fallbackIndex = 0) => {
+  const override = COURSE_IMAGE_OVERRIDES.get(normalizeTitle(course?.title));
+  if (override) return override;
+
+  return COURSE_DETAILS_HERO_IMAGES[fallbackIndex % COURSE_DETAILS_HERO_IMAGES.length];
+};
+
 export const COURSE_DETAILS_SNEAK_PEEK_IMAGES = [
   'https://images.unsplash.com/photo-1494412685616-a5d310fbb07d?auto=format&fit=crop&w=800&q=80',
   'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80',

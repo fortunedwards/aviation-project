@@ -5,7 +5,7 @@ import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
 import coursesData from '../data/courses.json';
-import { COURSE_DETAILS_HERO_IMAGES } from '../data/images';
+import { getCourseHeroImage } from '../data/images';
 
 const PAGE_SIZE = 9;
 
@@ -188,10 +188,7 @@ function CoursesPage() {
                   const price = normalizePrice(course);
                   const duration = normalizeDuration(course);
                   const courseIndex = courses.findIndex((item) => item.slug === course.slug);
-                  const image =
-                    COURSE_DETAILS_HERO_IMAGES[
-                      (courseIndex >= 0 ? courseIndex : index) % COURSE_DETAILS_HERO_IMAGES.length
-                    ];
+                  const image = getCourseHeroImage(course, courseIndex >= 0 ? courseIndex : index);
 
                   return (
                     <Link
