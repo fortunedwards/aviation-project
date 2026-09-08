@@ -6,6 +6,12 @@ const { logAction } = require('../utils/logger');
 
 exports.registerStudent = async (req, res) => {
     try {
+        const normalizeOptionalText = (value) => {
+            if (typeof value !== 'string') return null;
+            const trimmed = value.trim();
+            return trimmed ? trimmed : null;
+        };
+
         const { 
             surname, 
             other_names, 
@@ -36,7 +42,7 @@ exports.registerStudent = async (req, res) => {
         }
 
         // 2. Validation passed — now upload files to Cloudinary
-        const savedFiles = await upload.uploadApplicationFiles(req.files);
+        const savedFiles = await upload.uploadApplicationFiles(req.files || {});
         const passportPath = savedFiles['passport'] || null;
         const certificatePath = savedFiles['certificates'] || null;
 
@@ -56,7 +62,7 @@ exports.registerStudent = async (req, res) => {
             surname, other_names, email, dob, sex,
             place_of_birth, state_of_origin, nationality, address,
             phone, selectedCourse, nok_name, nok_phone, nok_relation,
-            org_pos || null, education || null, technical || null, qualifications || null, experience || null,
+            normalizeOptionalText(org_pos), normalizeOptionalText(education), normalizeOptionalText(technical), normalizeOptionalText(qualifications), normalizeOptionalText(experience),
             payment_ref && payment_ref !== 'FREE_REG' ? 'Paid' : 'Pending',
             passportPath, certificatePath, payment_ref
         ];
