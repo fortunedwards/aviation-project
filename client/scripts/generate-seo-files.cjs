@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const siteUrl = (process.env.VITE_SITE_URL || 'https://aeroconsultonline.vercel.app').replace(/\/$/, '');
+const siteUrl = (process.env.VITE_SITE_URL || 'https://www.aeroconsultaviation.com').replace(/\/$/, '');
 const today = new Date().toISOString().slice(0, 10);
 const publicDir = path.resolve(__dirname, '..', 'public');
 const coursesPath = path.resolve(__dirname, '..', 'src', 'data', 'courses.json');

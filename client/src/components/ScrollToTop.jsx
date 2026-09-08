@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import coursesData from '../data/courses.json';
 
 const SITE_NAME = 'Aeroconsult Ltd.';
-const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://aeroconsultonline.vercel.app';
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'https://www.aeroconsultaviation.com';
 const DEFAULT_IMAGE = `${SITE_URL}/aeroconsult_logo.jpg`;
 const courses = Array.isArray(coursesData?.courses) ? coursesData.courses : [];
 
