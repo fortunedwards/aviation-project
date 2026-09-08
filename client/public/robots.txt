@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aeroconsultonline.vercel.app/sitemap.xml
