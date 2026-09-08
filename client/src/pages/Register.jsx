@@ -22,7 +22,6 @@ import AviationSidePanel from '../components/AviationSidePanel';
 import PublicSupportChat from '../components/PublicSupportChat';
 import { usePopup } from '../components/context/PopupProvider';
 import SelectField from '../components/context/SelectField';
-import coursesData from '../data/courses.json';
 
 const JOURNEY_STEPS = [
   {
@@ -256,20 +255,11 @@ const Register = () => {
   const [availableCourses, setAvailableCourses] = useState([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [emailValid, setEmailValid] = useState(null);
-  const normalizeCourse = (course, index = 0) => ({
-    ...course,
-    id: course?.id ?? course?.slug ?? `fallback-course-${index + 1}`,
-    form_fee: course?.form_fee ?? course?.price ?? 0,
-  });
-  const fallbackCourses = Array.isArray(coursesData?.courses)
-    ? coursesData.courses.map((course, index) => normalizeCourse(course, index))
-    : [];
-  const courses = (Array.isArray(availableCourses)
+  const courses = Array.isArray(availableCourses)
     ? availableCourses
     : Array.isArray(availableCourses?.data)
       ? availableCourses.data
-      : []
-  ).map((course, index) => normalizeCourse(course, index));
+      : [];
   const safeSteps = Array.isArray(JOURNEY_STEPS) ? JOURNEY_STEPS : [];
 
   const [formData, setFormData] = useState({
@@ -305,10 +295,10 @@ const Register = () => {
             ? res.data.data
             : [];
 
-        setAvailableCourses(apiCourses.length > 0 ? apiCourses : fallbackCourses);
+        setAvailableCourses(apiCourses);
       })
       .catch(() => {
-        setAvailableCourses(fallbackCourses);
+        setAvailableCourses([]);
       })
       .finally(() => setCoursesLoading(false));
   }, []);
@@ -621,10 +611,14 @@ const Register = () => {
                         <Label htmlFor="course">Select Course</Label>
                         {coursesLoading ? (
                           <div className="h-12 animate-pulse rounded-xl bg-[#EAF7FF]" />
+                        ) : courses.length === 0 ? (
+                          <div className="rounded-xl border border-dashed border-[#BFE2F5] bg-[#F7FBFF] px-4 py-3 text-sm text-slate-500">
+                            No courses are currently available from the database.
+                          </div>
                         ) : (
                           <SelectField
-                              id="course"
-                              name="selectedCourse"
+                            id="course"
+                            name="selectedCourse"
                               value={formData.selectedCourse}
                               onChange={onChange}
                               required
