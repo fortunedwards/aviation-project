@@ -76,13 +76,13 @@ const Label = ({ children, htmlFor, optional = false }) => (
   </label>
 );
 
-const StepIndicator = ({ currentStep, onStepClick, canJumpToStep }) => (
+const StepIndicator = ({ steps, currentStep, onStepClick, canJumpToStep }) => (
   <nav aria-label="Progress" className="mb-10">
-    <ol className="grid grid-cols-4 gap-3" role="list">
-      {JOURNEY_STEPS.map((item, index) => {
+    <ol className={`grid gap-3 ${steps.length === 3 ? 'grid-cols-3' : 'grid-cols-4'}`} role="list">
+      {steps.map((item, index) => {
         const isDone = item.id < currentStep;
         const isActive = item.id === currentStep;
-        const isLast = index === JOURNEY_STEPS.length - 1;
+        const isLast = index === steps.length - 1;
 
         return (
           <li key={item.id} className="relative">
@@ -114,7 +114,7 @@ const StepIndicator = ({ currentStep, onStepClick, canJumpToStep }) => (
                   {isDone ? (
                     <Check size={18} strokeWidth={2.6} />
                   ) : (
-                    item.id
+                    item.displayNumber ?? item.id
                   )}
                 </span>
               </span>
@@ -260,7 +260,6 @@ const Register = () => {
     : Array.isArray(availableCourses?.data)
       ? availableCourses.data
       : [];
-  const safeSteps = Array.isArray(JOURNEY_STEPS) ? JOURNEY_STEPS : [];
 
   const [formData, setFormData] = useState({
     surname: '',
@@ -349,7 +348,16 @@ const Register = () => {
   const selectedCourseDetails = courses.find(
     (course) => String(course.id) === String(formData.selectedCourse)
   );
-  const amount = selectedCourseDetails ? parseFloat(selectedCourseDetails.form_fee || 0) * 100 : 0;
+  const selectedCourseFee = Number(selectedCourseDetails?.form_fee || 0);
+  const requiresEducationStep = selectedCourseFee > 0;
+  const journeySteps = requiresEducationStep
+    ? JOURNEY_STEPS.map((item) => ({ ...item, displayNumber: item.id }))
+    : [
+        { ...JOURNEY_STEPS[0], displayNumber: 1 },
+        { ...JOURNEY_STEPS[1], displayNumber: 2 },
+        { ...JOURNEY_STEPS[3], displayNumber: 3, eyebrow: 'Final Review' },
+      ];
+  const amount = selectedCourseDetails ? selectedCourseFee * 100 : 0;
   const formattedAmount = new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
@@ -384,17 +392,21 @@ const Register = () => {
       !!formData.nok_name &&
       !!formData.nok_phone &&
       !!formData.nok_relation,
-    3:
+    3: !requiresEducationStep || (
       !!formData.education &&
       !!formData.technical &&
       !!formData.qualifications &&
       !!formData.experience &&
-      !!certFile,
+      !!certFile
+    ),
   };
+
+  const allowedSteps = requiresEducationStep ? [1, 2, 3, 4] : [1, 2, 4];
 
   const canJumpToStep = (targetStep) => {
     if (targetStep <= step) return true;
-    for (let current = 1; current < targetStep; current += 1) {
+    for (const current of allowedSteps) {
+      if (current >= targetStep) break;
       if (!stepValidation[current]) return false;
     }
     return true;
@@ -407,7 +419,17 @@ const Register = () => {
 
   const handleNext = () => {
     if (!stepValidation[step]) return;
-    setStep((current) => Math.min(current + 1, 4));
+    if (step === 1) {
+      setStep(2);
+      return;
+    }
+    if (step === 2) {
+      setStep(requiresEducationStep ? 3 : 4);
+      return;
+    }
+    if (step === 3) {
+      setStep(4);
+    }
   };
 
   const handleFinalSubmit = async (paymentReference = 'FREE_REG') => {
@@ -487,7 +509,7 @@ const Register = () => {
     }
   };
 
-  const currentStepMeta = safeSteps.find((item) => item.id === step) || safeSteps[0] || null;
+  const currentStepMeta = journeySteps.find((item) => item.id === step) || journeySteps[0] || null;
   const fullName = [formData.surname, formData.other_names].filter(Boolean).join(' ');
 
   return (
@@ -590,6 +612,7 @@ const Register = () => {
             </header>
 
             <StepIndicator
+              steps={journeySteps}
               currentStep={step}
               onStepClick={goToStep}
               canJumpToStep={canJumpToStep}
@@ -942,7 +965,7 @@ const Register = () => {
                 </motion.section>
               )}
 
-              {step === 3 && (
+              {requiresEducationStep && step === 3 && (
                 <motion.section
                   key="step-3"
                   initial={{ opacity: 0, y: 24 }}
@@ -1085,15 +1108,17 @@ const Register = () => {
                     </div>
                   </SummarySection>
 
-                  <SummarySection title="Education & Background" onEdit={() => setStep(3)}>
-                    <div className="grid gap-6">
-                      <SummaryItem label="Education" value={formData.education} />
-                      <SummaryItem label="Technical Training" value={formData.technical} />
-                      <SummaryItem label="Qualifications" value={formData.qualifications} />
-                      <SummaryItem label="Experience" value={formData.experience} />
-                      <SummaryItem label="Supporting PDF" value={certFile?.name} />
-                    </div>
-                  </SummarySection>
+                  {requiresEducationStep && (
+                    <SummarySection title="Education & Background" onEdit={() => setStep(3)}>
+                      <div className="grid gap-6">
+                        <SummaryItem label="Education" value={formData.education} />
+                        <SummaryItem label="Technical Training" value={formData.technical} />
+                        <SummaryItem label="Qualifications" value={formData.qualifications} />
+                        <SummaryItem label="Experience" value={formData.experience} />
+                        <SummaryItem label="Supporting PDF" value={certFile?.name} />
+                      </div>
+                    </SummarySection>
+                  )}
 
                   <section className="rounded-[28px] border border-[#D6EAF7] bg-white p-6 shadow-[0_18px_50px_rgba(29,53,87,0.06)]">
                     <label className="flex cursor-pointer items-start gap-4">
@@ -1119,7 +1144,11 @@ const Register = () => {
                   </section>
 
                   <div className="flex flex-col gap-3 rounded-[28px] border border-[#D6EAF7] bg-white p-6 shadow-[0_18px_50px_rgba(29,53,87,0.06)] sm:flex-row sm:items-center sm:justify-between">
-                    <button type="button" onClick={() => setStep(3)} className={secondaryButtonClass}>
+                    <button
+                      type="button"
+                      onClick={() => setStep(requiresEducationStep ? 3 : 2)}
+                      className={secondaryButtonClass}
+                    >
                       <ArrowLeft size={18} strokeWidth={2.4} />
                       Back
                     </button>
