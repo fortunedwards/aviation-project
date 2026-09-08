@@ -22,6 +22,7 @@ import AviationSidePanel from '../components/AviationSidePanel';
 import PublicSupportChat from '../components/PublicSupportChat';
 import { usePopup } from '../components/context/PopupProvider';
 import SelectField from '../components/context/SelectField';
+import coursesData from '../data/courses.json';
 
 const JOURNEY_STEPS = [
   {
@@ -255,11 +256,20 @@ const Register = () => {
   const [availableCourses, setAvailableCourses] = useState([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [emailValid, setEmailValid] = useState(null);
-  const courses = Array.isArray(availableCourses)
+  const normalizeCourse = (course, index = 0) => ({
+    ...course,
+    id: course?.id ?? course?.slug ?? `fallback-course-${index + 1}`,
+    form_fee: course?.form_fee ?? course?.price ?? 0,
+  });
+  const fallbackCourses = Array.isArray(coursesData?.courses)
+    ? coursesData.courses.map((course, index) => normalizeCourse(course, index))
+    : [];
+  const courses = (Array.isArray(availableCourses)
     ? availableCourses
     : Array.isArray(availableCourses?.data)
       ? availableCourses.data
-      : [];
+      : []
+  ).map((course, index) => normalizeCourse(course, index));
   const safeSteps = Array.isArray(JOURNEY_STEPS) ? JOURNEY_STEPS : [];
 
   const [formData, setFormData] = useState({
@@ -288,8 +298,18 @@ const Register = () => {
   useEffect(() => {
     api
       .get('/api/courses')
-      .then((res) => setAvailableCourses(Array.isArray(res.data) ? res.data : Array.isArray(res.data?.data) ? res.data.data : []))
-      .catch(() => {})
+      .then((res) => {
+        const apiCourses = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data?.data)
+            ? res.data.data
+            : [];
+
+        setAvailableCourses(apiCourses.length > 0 ? apiCourses : fallbackCourses);
+      })
+      .catch(() => {
+        setAvailableCourses(fallbackCourses);
+      })
       .finally(() => setCoursesLoading(false));
   }, []);
 
@@ -612,7 +632,7 @@ const Register = () => {
                               placeholder="Select a program..."
                             >
                             <option value="">Select a program...</option>
-                            {availableCourses.map((course) => (
+                            {courses.map((course) => (
                               <option key={course.id} value={course.id}>
                                 {course.title} (Reg Fee: ₦{course.form_fee || 0})
                               </option>
