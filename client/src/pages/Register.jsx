@@ -611,10 +611,6 @@ const Register = () => {
                         <Label htmlFor="course">Select Course</Label>
                         {coursesLoading ? (
                           <div className="h-12 animate-pulse rounded-xl bg-[#EAF7FF]" />
-                        ) : courses.length === 0 ? (
-                          <div className="rounded-xl border border-dashed border-[#BFE2F5] bg-[#F7FBFF] px-4 py-3 text-sm text-slate-500">
-                            No courses are currently available from the database.
-                          </div>
                         ) : (
                           <SelectField
                             id="course"
