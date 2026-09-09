@@ -147,7 +147,7 @@ const StaffManagement = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(
+      await api.patch(
         `/api/staff/${person.id}/status`,
         { status: nextStatus },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -168,7 +168,7 @@ const StaffManagement = () => {
     setSavingCourses(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.put(
+      await api.put(
         '/api/staff/assign-course',
         { staffId: courseModalStaff.id, courseIds: draftCourseIds },
         { headers: { Authorization: `Bearer ${token}` } }
