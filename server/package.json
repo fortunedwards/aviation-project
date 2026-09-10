@@ -11,7 +11,8 @@
     "migrate:chat:v2": "node migrate_chat_v2_schema.js",
     "create:admin": "node create_admin.js",
     "migrate:courses": "node migrate_course_catalog.js",
-    "start:railway": "node migrate_course_catalog.js && node index.js"
+    "migrate:calendar-course-links": "node migrate_calendar_course_links.js",
+    "start:railway": "node migrate_course_catalog.js && node migrate_calendar_course_links.js && node index.js"
   },
   "keywords": [],
   "author": "",

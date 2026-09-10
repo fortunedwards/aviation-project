@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { CalendarDays, Clock3, MapPin } from 'lucide-react';
 import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
@@ -19,6 +20,9 @@ const formatTime = (event) => {
   return event.end_time ? `${event.start_time} – ${event.end_time}` : event.start_time;
 };
 
+const eventDateKey = (value) => String(value || '').slice(0, 10);
+const formatEventDate = (value, options) => new Date(`${eventDateKey(value)}T00:00:00`).toLocaleDateString('en-US', options);
+
 export default function PublicTrainingCalendarPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +36,7 @@ export default function PublicTrainingCalendarPage() {
   }, []);
 
   const groupedEvents = useMemo(() => events.reduce((groups, event) => {
-    const key = new Date(`${event.event_date}T00:00:00`).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const key = formatEventDate(event.event_date, { month: 'long', year: 'numeric' });
     if (!groups[key]) groups[key] = [];
     groups[key].push(event);
     return groups;
@@ -41,12 +45,16 @@ export default function PublicTrainingCalendarPage() {
   return (
     <div className="min-h-screen bg-white text-[#2B2A4C]">
       <PublicHeader />
-      <section className="relative overflow-hidden bg-[#2B2A4C] px-6 pb-16 pt-32 sm:pt-40 lg:px-12">
-        <div className="pointer-events-none absolute -left-20 top-16 h-72 w-72 rounded-full bg-[#2095D3]/20 blur-3xl" />
+      <section className="relative overflow-hidden bg-[#2B2A4C] px-6 pb-16 pt-28 sm:pb-20 sm:pt-36 lg:px-12">
+        <div className="pointer-events-none absolute -left-20 top-14 h-72 w-72 rounded-full bg-[#2095D3]/20 blur-3xl" />
+        <div className="pointer-events-none absolute right-10 top-20 h-56 w-56 rotate-12 rounded-[36px] border border-white/10 bg-white/5" />
+        <div className="pointer-events-none absolute bottom-6 right-24 h-40 w-40 rounded-full border border-[#45A1D6]/25" />
+        <CalendarDays className="pointer-events-none absolute left-[12%] top-28 h-12 w-12 -rotate-12 text-[#45A1D6]/30 sm:h-16 sm:w-16" />
+        <CalendarDays className="pointer-events-none absolute bottom-10 right-[14%] h-10 w-10 rotate-12 text-white/20 sm:h-14 sm:w-14" />
+        <CalendarDays className="pointer-events-none absolute right-[30%] top-16 h-7 w-7 text-[#99D2F2]/35" />
         <div className="container-max relative z-10 mx-auto text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#99D2F2]">Plan your training</p>
-          <h1 className="mt-4 text-4xl font-black tracking-tight text-white sm:text-6xl">Training Calendar</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-white/80 sm:text-base">Explore upcoming training programs, operational events, and important academy dates.</p>
+          <h1 className="text-3xl font-black tracking-tight text-white sm:text-5xl">Training Calendar</h1>
+          <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-white/80 sm:mt-5 sm:text-base md:text-lg">Explore upcoming training programs, operational events, and important academy dates.</p>
         </div>
       </section>
 
@@ -58,14 +66,18 @@ export default function PublicTrainingCalendarPage() {
           <section key={month} className="mb-12 last:mb-0">
             <div className="mb-5 flex items-center gap-3"><CalendarDays className="text-[#2095D3]" size={22} /><h2 className="text-2xl font-black text-[#2B2A4C]">{month}</h2></div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {monthEvents.map((event) => (
-                <article key={event.id} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+              {monthEvents.map((event) => {
+                const cardContent = <>
                   <div className="flex items-start justify-between gap-3"><p className="text-lg font-black text-[#2B2A4C]">{event.title}</p><span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ring-1 ${CATEGORY_TONES[event.category] || 'bg-slate-50 text-slate-600 ring-slate-100'}`}>{event.category || 'Other'}</span></div>
-                  <p className="mt-4 text-sm font-bold text-[#2095D3]">{new Date(`${event.event_date}T00:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                  <p className="mt-4 text-sm font-bold text-[#2095D3]">{formatEventDate(event.event_date, { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' })}</p>
                   <div className="mt-3 space-y-2 text-sm text-slate-600"><p className="flex items-center gap-2"><Clock3 size={15} />{formatTime(event)}</p>{event.location && <p className="flex items-center gap-2"><MapPin size={15} />{event.location}</p>}</div>
                   {event.description && <p className="mt-4 border-t border-slate-100 pt-4 text-sm leading-6 text-slate-500">{event.description}</p>}
-                </article>
-              ))}
+                </>;
+                const classes = 'block rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md';
+                return event.course_slug
+                  ? <Link key={event.id} to={`/courses/${event.course_slug}`} className={classes}>{cardContent}</Link>
+                  : <article key={event.id} className={classes}>{cardContent}</article>;
+              })}
             </div>
           </section>
         ))}

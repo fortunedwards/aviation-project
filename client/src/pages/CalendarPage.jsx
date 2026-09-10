@@ -51,7 +51,7 @@ const CalendarPage = ({ title = 'Manage Schedule', subtitle = 'Track classes, re
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
     title: '',
-    category: 'Course',
+    category: '',
     event_date: '',
     end_date: '',
     start_time: '',
@@ -59,7 +59,9 @@ const CalendarPage = ({ title = 'Manage Schedule', subtitle = 'Track classes, re
     is_all_day: false,
     location: '',
     description: '',
+    course_id: '',
   });
+  const [courses, setCourses] = useState([]);
 
   const role = getCurrentRole();
   const canManageEvents = role === 'Admin' || role === 'Manager';
@@ -97,6 +99,7 @@ const CalendarPage = ({ title = 'Manage Schedule', subtitle = 'Track classes, re
   useEffect(() => {
     fetchEvents();
     fetchCategories();
+    api.get('/api/courses').then((res) => setCourses(Array.isArray(res.data) ? res.data : [])).catch(() => setCourses([]));
   }, []);
 
   const normalizedEvents = useMemo(
@@ -200,7 +203,7 @@ const CalendarPage = ({ title = 'Manage Schedule', subtitle = 'Track classes, re
       setShowCreate(false);
       setForm({
         title: '',
-        category: 'Course',
+        category: '',
         event_date: '',
         end_date: '',
         start_time: '',
@@ -208,6 +211,7 @@ const CalendarPage = ({ title = 'Manage Schedule', subtitle = 'Track classes, re
         is_all_day: false,
         location: '',
         description: '',
+        course_id: '',
       });
       fetchEvents();
     } catch (err) {
@@ -391,13 +395,19 @@ const CalendarPage = ({ title = 'Manage Schedule', subtitle = 'Track classes, re
 
             {showCreate && canManageEvents && (
               <form onSubmit={handleCreateEvent} className="mt-4 space-y-3 rounded-2xl border border-sky-100 bg-slate-50 p-4">
-                <input required value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} placeholder="Event title" className="w-full rounded-xl border border-sky-100 px-3 py-2 text-sm" />
                 <div className="grid grid-cols-2 gap-2">
-                  <select value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))} className="rounded-xl border border-sky-100 px-3 py-2 text-sm">
+                  <select required value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value, course_id: '', title: e.target.value === 'Course' ? '' : p.title }))} className="rounded-xl border border-sky-100 px-3 py-2 text-sm">
+                    <option value="">Select event type</option>
                     {categories.map((category) => <option key={category} value={category}>{category}</option>)}
                   </select>
                   <input required type="date" value={form.event_date} onChange={(e) => setForm((p) => ({ ...p, event_date: e.target.value }))} className="rounded-xl border border-sky-100 px-3 py-2 text-sm" />
                 </div>
+                {form.category === 'Course' ? (
+                  <select required value={form.course_id} onChange={(e) => { const selected = courses.find((course) => String(course.id) === e.target.value); setForm((p) => ({ ...p, course_id: e.target.value, title: selected?.title || '' })); }} className="w-full rounded-xl border border-sky-100 px-3 py-2 text-sm">
+                    <option value="">Select course</option>
+                    {courses.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}
+                  </select>
+                ) : <input required value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} placeholder="Event title" className="w-full rounded-xl border border-sky-100 px-3 py-2 text-sm" />}
                 <div className="grid grid-cols-2 gap-2">
                   <input type="date" value={form.end_date} onChange={(e) => setForm((p) => ({ ...p, end_date: e.target.value }))} className="rounded-xl border border-sky-100 px-3 py-2 text-sm" />
                   <input value={form.location} onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))} placeholder="Location" className="rounded-xl border border-sky-100 px-3 py-2 text-sm" />

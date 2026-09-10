@@ -63,9 +63,12 @@ exports.getCalendarEvents = async (req, res) => {
         is_all_day,
         location,
         description,
+        course_id,
+        c.slug AS course_slug,
         created_by,
         created_at
       FROM calendar_events
+      LEFT JOIN courses c ON c.id = calendar_events.course_id
       ${whereClause}
       ORDER BY event_date ASC, start_time ASC NULLS LAST, created_at DESC
       ${limitClause}
@@ -84,8 +87,9 @@ exports.getCalendarEvents = async (req, res) => {
 exports.getPublicCalendarEvents = async (_req, res) => {
   try {
     const result = await db.query(`
-      SELECT id, title, category, event_date, end_date, start_time, end_time, is_all_day, location, description
-      FROM calendar_events
+      SELECT e.id, e.title, e.category, e.event_date, e.end_date, e.start_time, e.end_time, e.is_all_day, e.location, e.description, c.slug AS course_slug
+      FROM calendar_events e
+      LEFT JOIN courses c ON c.id = e.course_id
       WHERE event_date >= CURRENT_DATE
       ORDER BY event_date ASC, start_time ASC NULLS LAST, created_at DESC
       LIMIT 100
@@ -109,13 +113,24 @@ exports.createCalendarEvent = async (req, res) => {
       is_all_day,
       location,
       description,
+      course_id,
     } = req.body;
 
-    if (!title || !event_date) {
+    if (!event_date) {
       return res.status(400).json({ success: false, error: 'Title and event date are required.' });
     }
 
     const normalizedCategory = normalizeCategory(category);
+    let eventTitle = String(title || '').trim();
+    let linkedCourseId = null;
+    if (normalizedCategory === 'Course') {
+      if (!course_id) return res.status(400).json({ success: false, error: 'Select a course for a Course event.' });
+      const courseResult = await db.query('SELECT id, title FROM courses WHERE id = $1', [course_id]);
+      if (!courseResult.rows[0]) return res.status(400).json({ success: false, error: 'The selected course was not found.' });
+      linkedCourseId = courseResult.rows[0].id;
+      eventTitle = courseResult.rows[0].title;
+    }
+    if (!eventTitle) return res.status(400).json({ success: false, error: 'Title and event date are required.' });
 
     const created = await db.query(
       `
@@ -129,13 +144,14 @@ exports.createCalendarEvent = async (req, res) => {
         is_all_day,
         location,
         description,
+        course_id,
         created_by
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
-      RETURNING id, title, category, event_date, end_date, start_time, end_time, is_all_day, location, description, created_by, created_at
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+      RETURNING id, title, category, event_date, end_date, start_time, end_time, is_all_day, location, description, course_id, created_by, created_at
       `,
       [
-        title,
+        eventTitle,
         normalizedCategory,
         event_date,
         end_date || null,
@@ -144,6 +160,7 @@ exports.createCalendarEvent = async (req, res) => {
         Boolean(is_all_day),
         location || null,
         description || null,
+        linkedCourseId,
         req.user?.id || null,
       ]
     );
@@ -153,7 +170,7 @@ exports.createCalendarEvent = async (req, res) => {
       userId: req.user.id,
       actorRole: req.user.role,
       action: 'CALENDAR_EVENT_CREATED',
-      description: `Created calendar event: ${title}`,
+      description: `Created calendar event: ${eventTitle}`,
       metadata: {
         event_id: created.rows[0].id,
         event_category: normalizedCategory,
