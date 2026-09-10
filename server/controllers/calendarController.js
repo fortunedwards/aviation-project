@@ -188,6 +188,35 @@ exports.createCalendarEvent = async (req, res) => {
   }
 };
 
+exports.deleteCalendarEvent = async (req, res) => {
+  try {
+    const existing = await db.query(
+      'SELECT id, title, category, event_date, course_id FROM calendar_events WHERE id = $1',
+      [req.params.id]
+    );
+    if (!existing.rows[0]) {
+      return res.status(404).json({ success: false, error: 'Calendar event not found.' });
+    }
+
+    await db.query('DELETE FROM calendar_events WHERE id = $1', [req.params.id]);
+    await logAction({
+      req,
+      userId: req.user.id,
+      actorRole: req.user.role,
+      action: 'CALENDAR_EVENT_DELETED',
+      description: `Deleted calendar event: ${existing.rows[0].title}`,
+      targetType: 'calendar_event',
+      targetId: existing.rows[0].id,
+      beforeState: existing.rows[0],
+      statusCode: 200,
+    });
+    res.status(200).json({ success: true, message: 'Calendar event deleted.' });
+  } catch (err) {
+    console.error('Calendar event deletion error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to delete calendar event.' });
+  }
+};
+
 exports.getCalendarCategories = async (_req, res) => {
   res.status(200).json({ success: true, data: EVENT_CATEGORIES });
 };

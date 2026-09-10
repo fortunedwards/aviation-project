@@ -7,6 +7,7 @@ import {
   MapPin,
   Plus,
   Search,
+  Trash2,
 } from 'lucide-react';
 
 const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -224,6 +225,19 @@ const CalendarPage = ({ title = 'Manage Schedule', subtitle = 'Track classes, re
     }
   };
 
+  const handleDeleteEvent = async (event) => {
+    if (!window.confirm(`Delete “${event.title}”? This will remove it from the public training calendar as well.`)) return;
+    try {
+      await api.delete(`/api/calendar/events/${event.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setEvents((current) => current.filter((item) => item.id !== event.id));
+    } catch (err) {
+      console.error('Failed to delete calendar event', err);
+      window.alert(err.response?.data?.error || 'Could not delete this event. Please try again.');
+    }
+  };
+
   const renderMonthView = () => (
     <div className="grid grid-cols-7 gap-px bg-sky-50 p-1">
       {WEEK_DAYS.map((day) => (
@@ -432,7 +446,10 @@ const CalendarPage = ({ title = 'Manage Schedule', subtitle = 'Track classes, re
                 <article key={event.id} className="rounded-2xl border border-sky-100 bg-slate-50/70 p-4">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-bold text-slate-800">{event.title}</p>
-                    <span className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${CATEGORY_COLORS[event.category] || CATEGORY_COLORS.Other}`}>{event.category}</span>
+                    <div className="flex items-center gap-2">
+                      <span className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${CATEGORY_COLORS[event.category] || CATEGORY_COLORS.Other}`}>{event.category}</span>
+                      {canManageEvents && <button type="button" onClick={() => handleDeleteEvent(event)} title={`Delete ${event.title}`} className="rounded-lg p-1.5 text-rose-500 transition hover:bg-rose-50 hover:text-rose-700"><Trash2 size={15} /></button>}
+                    </div>
                   </div>
                   <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-sky-700">{new Date(event.event_date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
                   <div className="mt-3 space-y-1 text-xs text-slate-500">
