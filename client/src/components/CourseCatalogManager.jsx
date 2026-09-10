@@ -1,20 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LoaderCircle, Save } from 'lucide-react';
 import api from '../lib/api';
 
 const asNumber = (value) => Number(value || 0);
+const PAGE_SIZE = 10;
 
 export default function CourseCatalogManager() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
   const [message, setMessage] = useState('');
+  const [page, setPage] = useState(1);
 
   const loadCourses = async () => {
     setLoading(true);
     try {
       const response = await api.get('/api/courses');
       setCourses(Array.isArray(response.data) ? response.data : []);
+      setPage(1);
     } catch {
       setMessage('Could not load the course catalog.');
     } finally {
@@ -27,6 +30,12 @@ export default function CourseCatalogManager() {
   const changeCourse = (id, field, value) => {
     setCourses((current) => current.map((course) => (course.id === id ? { ...course, [field]: value } : course)));
   };
+
+  const totalPages = Math.max(1, Math.ceil(courses.length / PAGE_SIZE));
+  const visibleCourses = useMemo(
+    () => courses.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [courses, page]
+  );
 
   const saveCourse = async (course) => {
     setSavingId(course.id);
@@ -65,7 +74,7 @@ export default function CourseCatalogManager() {
                 <tr><th className="px-5 py-4">Title</th><th className="px-5 py-4">Form fee (₦)</th><th className="px-5 py-4">Course fee (₦)</th><th className="px-5 py-4">Duration</th><th className="px-5 py-4" /></tr>
               </thead>
               <tbody>
-                {courses.map((course) => (
+                {visibleCourses.map((course) => (
                   <tr key={course.id} className="border-b border-slate-100 last:border-0">
                     <td className="p-4"><input value={course.title || ''} onChange={(event) => changeCourse(course.id, 'title', event.target.value)} className="w-full min-w-64 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-800 outline-none focus:border-[#2095D3]" /></td>
                     <td className="p-4"><input type="number" min="0" value={course.form_fee ?? 0} onChange={(event) => changeCourse(course.id, 'form_fee', event.target.value)} className="w-36 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 outline-none focus:border-[#2095D3]" /></td>
@@ -79,6 +88,16 @@ export default function CourseCatalogManager() {
             </table>
           )}
         </div>
+        {!loading && courses.length > 0 && (
+          <div className="mt-5 flex flex-col gap-3 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+            <p>Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, courses.length)} of {courses.length} courses</p>
+            <div className="flex items-center gap-3">
+              <button type="button" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page === 1} className="rounded-lg border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-600 transition hover:border-[#99D2F2] hover:text-[#2095D3] disabled:cursor-not-allowed disabled:opacity-40">Previous</button>
+              <span className="font-semibold text-slate-600">Page {page} of {totalPages}</span>
+              <button type="button" onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={page === totalPages} className="rounded-lg border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-600 transition hover:border-[#99D2F2] hover:text-[#2095D3] disabled:cursor-not-allowed disabled:opacity-40">Next</button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
