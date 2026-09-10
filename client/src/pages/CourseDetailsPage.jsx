@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   BookOpen,
@@ -11,8 +12,8 @@ import {
 import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
-import coursesData from '../data/courses.json';
 import { getCourseHeroImage } from '../data/images';
+import api from '../lib/api';
 
 const normalizePrice = (price) => {
   if (typeof price === 'number') return `₦${price.toLocaleString()}`;
@@ -20,33 +21,21 @@ const normalizePrice = (price) => {
   return '₦0';
 };
 
-const PAID_REGISTRATION_SLUGS = new Set([
-  'flight-dispatcher-flight-operations-officer-basic-fdb',
-  'flight-dispatcher-flight-operations-officer-advanced-fda',
-  'cabin-crew-initial-training-cci',
-  'cabin-crew-conversion-refresher-training-b737-classic',
-  'basic-aircraft-maintenance-technicians-course-batco',
-  'aircraft-maintenance-licence-preparatory-course-amlpc-ap',
-  'aircraft-maintenance-licence-preparatory-course-amlpc-avionics',
-  'b737-200-type-training-maintenance-initial',
-  'b737-classic-300-400-500-type-training-maintenance-initial',
-  'b737ng-type-training-maintenance-initial',
-  'b737-classic-ng-differences-course',
-  'bombardier-crj-type-training-maintenance-initial',
-  'dhc-8-q400-type-training-maintenance-initial',
-  'erj-135-145-legacy-type-training-maintenance-initial',
-]);
-
-const isPaidRegistrationCourse = (course) => {
-  return PAID_REGISTRATION_SLUGS.has(course?.slug);
-};
-
 function CourseDetailsPage() {
   const navigate = useNavigate();
   const { slug } = useParams();
-  const courses = Array.isArray(coursesData?.courses) ? coursesData.courses : [];
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    api.get('/api/courses')
+      .then((response) => setCourses(Array.isArray(response.data) ? response.data : []))
+      .catch(() => setCourses([]))
+      .finally(() => setLoading(false));
+  }, []);
   const courseIndex = courses.findIndex((item) => item.slug === slug);
   const course = courseIndex >= 0 ? courses[courseIndex] : null;
+
+  if (loading) return <div className="min-h-screen bg-white pt-40 text-center text-slate-500">Loading course…</div>;
 
   if (!course) {
     return (
@@ -70,8 +59,9 @@ function CourseDetailsPage() {
   const enrolledCount = 120 + courseIndex * 17;
   const rating = Number(course.rating ?? 4.8);
   const keyPoints = (course.outline || []).slice(0, 6);
-  const registrationFeeText = isPaidRegistrationCourse(course)
-    ? 'Registration costs ₦5,000'
+  const registrationFee = Number(course.form_fee || 0);
+  const registrationFeeText = registrationFee > 0
+    ? `Registration costs ₦${registrationFee.toLocaleString()}`
     : 'Registration is FREE';
 
   const openSupportChat = (event) => {
@@ -178,7 +168,7 @@ function CourseDetailsPage() {
               </div>
 
               <div className="mt-6 border-t border-slate-100 pt-6">
-                <p className="text-3xl font-black text-[#2B2A4C]">{normalizePrice(course.price)}</p>
+                <p className="text-3xl font-black text-[#2B2A4C]">{normalizePrice(course.price ?? course.course_fee)}</p>
                 <p className="mt-2 text-sm font-semibold text-slate-600">{registrationFeeText}</p>
                 <Link
                   to={`/register?courseSlug=${course.slug}`}

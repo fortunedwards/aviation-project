@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   CalendarDays,
+  BookOpen,
   ClipboardCheck,
   ClipboardList,
   ChevronLeft,
@@ -35,6 +36,7 @@ const NAV_ITEMS = {
   Manager: [
     { label: 'Dashboard', icon: LayoutDashboard, tab: 'dashboard' },
     { label: 'Admissions', icon: ClipboardList, tab: 'applications' },
+    { label: 'Courses', icon: BookOpen, tab: 'courses' },
     { label: 'Calendar', icon: CalendarDays, tab: 'calendar' },
     { label: 'Staff Registry', icon: Users, tab: 'staff' },
     { label: 'Audit Trails', icon: History, tab: 'logs' },

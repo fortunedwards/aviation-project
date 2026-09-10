@@ -4,8 +4,8 @@ import { ChevronDown, Clock3, Search, Star } from 'lucide-react';
 import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
-import coursesData from '../data/courses.json';
 import { getCourseHeroImage } from '../data/images';
+import api from '../lib/api';
 
 const PAGE_SIZE = 9;
 
@@ -17,13 +17,14 @@ const normalizeDuration = (course) =>
 
 const normalizePrice = (course) => {
   if (typeof course.price === 'number') return course.price;
-  const value = Number(course.price ?? 0);
+  const value = Number(course.price ?? course.course_fee ?? 0);
   return Number.isNaN(value) ? 0 : value;
 };
 
 function CoursesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [courses, setCourses] = useState([]);
+  const [coursesError, setCoursesError] = useState(false);
   const [queryInput, setQueryInput] = useState(() => searchParams.get('q') || '');
   const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState(() => searchParams.get('category') || 'All courses');
@@ -33,7 +34,9 @@ function CoursesPage() {
   });
 
   useEffect(() => {
-    setCourses(Array.isArray(coursesData?.courses) ? coursesData.courses : []);
+    api.get('/api/courses')
+      .then((response) => setCourses(Array.isArray(response.data) ? response.data : []))
+      .catch(() => setCoursesError(true));
   }, []);
 
   const categories = useMemo(() => {
@@ -167,6 +170,7 @@ function CoursesPage() {
 
       <section className="bg-white px-6 py-16 lg:px-12">
         <div className="container-max mx-auto">
+          {coursesError ? <p className="mb-6 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">Courses are temporarily unavailable. Please try again shortly.</p> : null}
           <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm font-semibold text-slate-600">
               {filteredCourses.length === 0

@@ -15,6 +15,7 @@ import AuditTrailsPanel from './AuditTrailsPanel';
 import ReviewModal from '../components/ReviewModal';
 import SideNavBar from '../components/SideNavBar';
 import TopNavBar from '../components/TopNavBar';
+import CourseCatalogManager from '../components/CourseCatalogManager';
 
 const registryGradient =
   'bg-[radial-gradient(circle_at_top_left,rgba(32,149,211,0.16),transparent_32%),linear-gradient(180deg,#f8fcff_0%,#eef7fd_100%)]';
@@ -285,6 +286,8 @@ const ManagerDashboard = ({ logout }) => {
             />
           </div>
         )}
+
+        {activeTab === 'courses' && <CourseCatalogManager />}
 
         {activeTab === 'logs' && <AuditTrailsPanel logs={logs} />}
         {activeTab === 'staff' && <StaffManagement />}

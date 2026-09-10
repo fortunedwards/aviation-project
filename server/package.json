@@ -10,8 +10,8 @@
     "migrate:chat": "node migrate_chat_schema.js",
     "migrate:chat:v2": "node migrate_chat_v2_schema.js",
     "create:admin": "node create_admin.js",
-    "migrate:courses": "node migrate_course_prices.js",
-    "start:railway": "node migrate_course_prices.js && node index.js"
+    "migrate:courses": "node migrate_course_catalog.js",
+    "start:railway": "node migrate_course_catalog.js && node index.js"
   },
   "keywords": [],
   "author": "",
