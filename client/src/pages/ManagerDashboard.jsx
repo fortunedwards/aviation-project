@@ -48,6 +48,8 @@ const dateKeyFromValue = (value) => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
+const eventDateKey = (value) => String(value || '').slice(0, 10);
+
 const ManagerOverviewDashboard = ({ applications, logs, events }) => {
   const totalApplications = applications.length;
   const approvedCount = applications.filter((app) => ['Approved', 'Enrolled'].includes(app.admission_status)).length;
@@ -78,8 +80,10 @@ const ManagerOverviewDashboard = ({ applications, logs, events }) => {
 
   const eventByDate = useMemo(() => {
     return events.reduce((acc, event) => {
-      if (!acc[event.event_date]) acc[event.event_date] = [];
-      acc[event.event_date].push(event);
+      const key = eventDateKey(event.event_date);
+      if (!key) return acc;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push({ ...event, event_date: key });
       return acc;
     }, {});
   }, [events]);

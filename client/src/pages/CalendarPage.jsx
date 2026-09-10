@@ -21,6 +21,7 @@ const CATEGORY_COLORS = {
 
 const pad = (value) => String(value).padStart(2, '0');
 const toDateKey = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+const normalizeDateKey = (value) => String(value || '').slice(0, 10);
 
 const formatEventTime = (event) => {
   if (event.is_all_day) return 'All day';
@@ -106,6 +107,8 @@ const CalendarPage = ({ title = 'Manage Schedule', subtitle = 'Track classes, re
     () =>
       events.map((event) => ({
         ...event,
+        event_date: normalizeDateKey(event.event_date),
+        end_date: normalizeDateKey(event.end_date),
         category: event.category || 'Other',
       })),
     [events]
