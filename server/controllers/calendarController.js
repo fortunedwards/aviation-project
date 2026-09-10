@@ -17,29 +17,29 @@ exports.getCalendarEvents = async (req, res) => {
 
     if (from) {
       values.push(from);
-      conditions.push(`event_date >= $${values.length}`);
+      conditions.push(`e.event_date >= $${values.length}`);
     }
 
     if (to) {
       values.push(to);
-      conditions.push(`event_date <= $${values.length}`);
+      conditions.push(`e.event_date <= $${values.length}`);
     }
 
     if (upcomingOnly === 'true') {
-      conditions.push(`event_date >= CURRENT_DATE`);
+      conditions.push(`e.event_date >= CURRENT_DATE`);
     }
 
     if (category && category !== 'ALL') {
       values.push(normalizeCategory(category));
-      conditions.push(`category = $${values.length}`);
+      conditions.push(`e.category = $${values.length}`);
     }
 
     if (q) {
       values.push(`%${String(q).trim()}%`);
       conditions.push(`(
-        title ILIKE $${values.length}
-        OR COALESCE(location, '') ILIKE $${values.length}
-        OR COALESCE(description, '') ILIKE $${values.length}
+        e.title ILIKE $${values.length}
+        OR COALESCE(e.location, '') ILIKE $${values.length}
+        OR COALESCE(e.description, '') ILIKE $${values.length}
       )`);
     }
 
@@ -53,24 +53,24 @@ exports.getCalendarEvents = async (req, res) => {
 
     const query = `
       SELECT
-        id,
-        title,
-        category,
-        event_date,
-        end_date,
-        start_time,
-        end_time,
-        is_all_day,
-        location,
-        description,
-        course_id,
+        e.id,
+        e.title,
+        e.category,
+        e.event_date,
+        e.end_date,
+        e.start_time,
+        e.end_time,
+        e.is_all_day,
+        e.location,
+        e.description,
+        e.course_id,
         c.slug AS course_slug,
-        created_by,
-        created_at
-      FROM calendar_events
-      LEFT JOIN courses c ON c.id = calendar_events.course_id
+        e.created_by,
+        e.created_at
+      FROM calendar_events e
+      LEFT JOIN courses c ON c.id = e.course_id
       ${whereClause}
-      ORDER BY event_date ASC, start_time ASC NULLS LAST, created_at DESC
+      ORDER BY e.event_date ASC, e.start_time ASC NULLS LAST, e.created_at DESC
       ${limitClause}
     `;
 
@@ -90,8 +90,8 @@ exports.getPublicCalendarEvents = async (_req, res) => {
       SELECT e.id, e.title, e.category, e.event_date, e.end_date, e.start_time, e.end_time, e.is_all_day, e.location, e.description, c.slug AS course_slug
       FROM calendar_events e
       LEFT JOIN courses c ON c.id = e.course_id
-      WHERE event_date >= CURRENT_DATE
-      ORDER BY event_date ASC, start_time ASC NULLS LAST, created_at DESC
+      WHERE e.event_date >= CURRENT_DATE
+      ORDER BY e.event_date ASC, e.start_time ASC NULLS LAST, e.created_at DESC
       LIMIT 100
     `);
     res.status(200).json({ success: true, data: result.rows });

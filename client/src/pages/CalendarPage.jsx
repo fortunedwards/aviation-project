@@ -394,28 +394,29 @@ const CalendarPage = ({ title = 'Manage Schedule', subtitle = 'Track classes, re
             </div>
 
             {showCreate && canManageEvents && (
-              <form onSubmit={handleCreateEvent} className="mt-4 space-y-3 rounded-2xl border border-sky-100 bg-slate-50 p-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <select required value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value, course_id: '', title: e.target.value === 'Course' ? '' : p.title }))} className="rounded-xl border border-sky-100 px-3 py-2 text-sm">
+              <form onSubmit={handleCreateEvent} className="mt-4 space-y-4 rounded-2xl border border-sky-100 bg-slate-50 p-4">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">Event type
+                  <select required value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value, course_id: '', title: e.target.value === 'Course' ? '' : p.title }))} className="mt-1.5 w-full rounded-xl border border-sky-100 bg-white px-3 py-2 text-sm font-normal text-slate-800">
                     <option value="">Select event type</option>
                     {categories.map((category) => <option key={category} value={category}>{category}</option>)}
                   </select>
-                  <input required type="date" value={form.event_date} onChange={(e) => setForm((p) => ({ ...p, event_date: e.target.value }))} className="rounded-xl border border-sky-100 px-3 py-2 text-sm" />
-                </div>
+                </label>
                 {form.category === 'Course' ? (
-                  <select required value={form.course_id} onChange={(e) => { const selected = courses.find((course) => String(course.id) === e.target.value); setForm((p) => ({ ...p, course_id: e.target.value, title: selected?.title || '' })); }} className="w-full rounded-xl border border-sky-100 px-3 py-2 text-sm">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">Course
+                  <select required value={form.course_id} onChange={(e) => { const selected = courses.find((course) => String(course.id) === e.target.value); setForm((p) => ({ ...p, course_id: e.target.value, title: selected?.title || '' })); }} className="mt-1.5 w-full rounded-xl border border-sky-100 bg-white px-3 py-2 text-sm font-normal text-slate-800">
                     <option value="">Select course</option>
                     {courses.map((course) => <option key={course.id} value={course.id}>{course.title}</option>)}
-                  </select>
-                ) : <input required value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} placeholder="Event title" className="w-full rounded-xl border border-sky-100 px-3 py-2 text-sm" />}
+                  </select></label>
+                ) : <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">Event title<input required value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} placeholder="Event title" className="mt-1.5 w-full rounded-xl border border-sky-100 bg-white px-3 py-2 text-sm font-normal" /></label>}
                 <div className="grid grid-cols-2 gap-2">
-                  <input type="date" value={form.end_date} onChange={(e) => setForm((p) => ({ ...p, end_date: e.target.value }))} className="rounded-xl border border-sky-100 px-3 py-2 text-sm" />
-                  <input value={form.location} onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))} placeholder="Location" className="rounded-xl border border-sky-100 px-3 py-2 text-sm" />
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Start date<input required type="date" value={form.event_date} onChange={(e) => setForm((p) => ({ ...p, event_date: e.target.value }))} className="mt-1.5 w-full rounded-xl border border-sky-100 bg-white px-3 py-2 text-sm font-normal" /></label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600">End date <span className="normal-case text-slate-400">(optional)</span><input type="date" value={form.end_date} onChange={(e) => setForm((p) => ({ ...p, end_date: e.target.value }))} className="mt-1.5 w-full rounded-xl border border-sky-100 bg-white px-3 py-2 text-sm font-normal" /></label>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <input type="time" value={form.start_time} onChange={(e) => setForm((p) => ({ ...p, start_time: e.target.value }))} className="rounded-xl border border-sky-100 px-3 py-2 text-sm" />
-                  <input type="time" value={form.end_time} onChange={(e) => setForm((p) => ({ ...p, end_time: e.target.value }))} className="rounded-xl border border-sky-100 px-3 py-2 text-sm" />
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600">Start time <span className="normal-case text-slate-400">(optional)</span><input type="time" value={form.start_time} onChange={(e) => setForm((p) => ({ ...p, start_time: e.target.value }))} className="mt-1.5 w-full rounded-xl border border-sky-100 bg-white px-3 py-2 text-sm font-normal" /></label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-600">End time <span className="normal-case text-slate-400">(optional)</span><input type="time" value={form.end_time} onChange={(e) => setForm((p) => ({ ...p, end_time: e.target.value }))} className="mt-1.5 w-full rounded-xl border border-sky-100 bg-white px-3 py-2 text-sm font-normal" /></label>
                 </div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-600">Location <span className="normal-case text-slate-400">(optional)</span><input value={form.location} onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))} placeholder="Location" className="mt-1.5 w-full rounded-xl border border-sky-100 bg-white px-3 py-2 text-sm font-normal" /></label>
                 <label className="flex items-center gap-2 text-xs font-semibold text-slate-600"><input type="checkbox" checked={form.is_all_day} onChange={(e) => setForm((p) => ({ ...p, is_all_day: e.target.checked }))} />All-day event</label>
                 <textarea value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} placeholder="Description" className="w-full rounded-xl border border-sky-100 px-3 py-2 text-sm" rows={3} />
                 <button disabled={creating} className="w-full rounded-xl bg-[#2095D3] py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#1785be] disabled:opacity-60">{creating ? 'Creating...' : 'Save Event'}</button>
