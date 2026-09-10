@@ -79,6 +79,24 @@ exports.getCalendarEvents = async (req, res) => {
   }
 };
 
+// Deliberately limited public feed: only upcoming event information, never
+// creator metadata or internal dashboard fields.
+exports.getPublicCalendarEvents = async (_req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT id, title, category, event_date, end_date, start_time, end_time, is_all_day, location, description
+      FROM calendar_events
+      WHERE event_date >= CURRENT_DATE
+      ORDER BY event_date ASC, start_time ASC NULLS LAST, created_at DESC
+      LIMIT 100
+    `);
+    res.status(200).json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error('Public calendar events fetch error:', err.message);
+    res.status(500).json({ success: false, error: 'Failed to load training calendar.' });
+  }
+};
+
 exports.createCalendarEvent = async (req, res) => {
   try {
     const {

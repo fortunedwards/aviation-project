@@ -3,10 +3,13 @@ const router = express.Router();
 
 const {
   getCalendarEvents,
+  getPublicCalendarEvents,
   createCalendarEvent,
   getCalendarCategories,
 } = require('../controllers/calendarController');
 const { protect, authorize } = require('../middleware/authMiddleware');
+
+router.get('/public/events', getPublicCalendarEvents);
 
 router.use(protect);
 

@@ -18,6 +18,7 @@ import PublicPlaceholderPage from './pages/PublicPlaceholderPage';
 import AboutPage from './pages/AboutPage';
 import CoursesPage from './pages/CoursesPage';
 import CourseDetailsPage from './pages/CourseDetailsPage';
+import PublicTrainingCalendarPage from './pages/PublicTrainingCalendarPage';
 import ScrollToTop from './components/ScrollToTop';
 import api from './lib/api';
 
@@ -65,15 +66,7 @@ function App() {
             <Route path="/registration-success" element={<RegistrationSuccess />} />
             <Route path="/status-tracker" element={<StatusTracker />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route
-              path="/training-calendar"
-              element={
-                <PublicPlaceholderPage
-                  title="Training Calendar"
-                  description="This page will showcase upcoming programs, training dates, and enrollment pathways."
-                />
-              }
-            />
+            <Route path="/training-calendar" element={<PublicTrainingCalendarPage />} />
             <Route
               path="/courses"
               element={<CoursesPage />}
