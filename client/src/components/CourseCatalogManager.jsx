@@ -51,8 +51,8 @@ export default function CourseCatalogManager() {
   return (
     <section className={`rounded-[36px] p-4 sm:p-6 lg:p-8 ${'bg-[radial-gradient(circle_at_top_left,rgba(32,149,211,0.16),transparent_32%),linear-gradient(180deg,#f8fcff_0%,#eef7fd_100%)]'}`}>
       <div className="mx-auto max-w-[1500px]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-[#45A1D6]">Accountable Manager Dashboard</p>
-        <h1 className="mt-4 text-4xl font-black tracking-tight text-[#191839] sm:text-5xl">Courses</h1>
+        <p className="text-[11px] font-bold uppercase tracking-[0.32em] text-[#45A1D6]">Courses</p>
+        <h1 className="mt-4 text-4xl font-black tracking-tight text-[#191839] sm:text-5xl">Manage Courses</h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-500">Manage the public course title, registration form fee, course price, and duration. Changes are published through the course API immediately.</p>
         {message && <p className="mt-5 rounded-xl border border-sky-100 bg-white px-4 py-3 text-sm font-semibold text-slate-600">{message}</p>}
 
