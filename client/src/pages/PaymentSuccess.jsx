@@ -7,15 +7,14 @@ const PaymentSuccess = () => {
     const [searchParams] = useSearchParams();
     const [status, setStatus] = useState('verifying');
     const navigate = useNavigate();
-    const reference = searchParams.get('reference');
+    const reference = searchParams.get('transaction_ref') || searchParams.get('reference');
+    const registrationFlow = searchParams.get('flow') === 'registration';
 
   useEffect(() => {
     const verify = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await api.get(`/api/payments/verify/${reference}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            if (!reference) throw new Error('Payment reference is missing.');
+            const res = await api.get(`/api/payments/verify/${encodeURIComponent(reference)}`);
             if (res.data.success) {
                 setStatus('success');
             } else {
@@ -42,9 +41,9 @@ const PaymentSuccess = () => {
                     <>
                         <CheckCircle size={80} className="text-green-500 mx-auto mb-6" />
                         <h1 className="text-3xl font-black text-slate-900 mb-2">Payment Secured!</h1>
-                        <p className="text-slate-500 mb-8">Your tuition has been cleared. Welcome to the flight deck.</p>
-                        <Link to="/student-portal" className="block w-full bg-blue-600 text-white py-4 rounded-xl font-bold">
-                            Return to Portal
+                        <p className="text-slate-500 mb-8">{registrationFlow ? 'Your registration payment has been received. We will contact you with the next steps.' : 'Your tuition has been cleared. Welcome to the flight deck.'}</p>
+                        <Link to={registrationFlow ? '/registration-success' : '/student-portal'} className="block w-full bg-blue-600 text-white py-4 rounded-xl font-bold">
+                            {registrationFlow ? 'Continue' : 'Return to Portal'}
                         </Link>
                     </>
                 ) : (

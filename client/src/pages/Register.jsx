@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createSearchParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../lib/api';
-import { usePaystackPayment } from 'react-paystack';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -357,21 +356,12 @@ const Register = () => {
         { ...JOURNEY_STEPS[1], displayNumber: 2 },
         { ...JOURNEY_STEPS[3], displayNumber: 3, eyebrow: 'Final Review' },
       ];
-  const amount = selectedCourseDetails ? selectedCourseFee * 100 : 0;
+  const amount = selectedCourseDetails ? selectedCourseFee : 0;
   const formattedAmount = new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
     maximumFractionDigits: 0,
   }).format(amount / 100 || 0);
-
-  const config = {
-    reference: new Date().getTime().toString(),
-    email: formData.email,
-    amount,
-    publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_your_actual_key_here',
-  };
-
-  const initializePayment = usePaystackPayment(config);
 
   const stepValidation = {
     1:
@@ -432,7 +422,7 @@ const Register = () => {
     }
   };
 
-  const handleFinalSubmit = async (paymentReference = 'FREE_REG') => {
+  const handleFinalSubmit = async (paymentReference = 'FREE_REG', redirectAfterSubmit = true) => {
     if (!passportFile) {
       return popup.warning('Please upload and crop your passport photograph.', {
         title: 'Passport Photo Required',
@@ -468,13 +458,16 @@ const Register = () => {
           courseTitle: selectedCourseDetails?.title || 'Selected course',
           fullName: [formData.surname, formData.other_names].filter(Boolean).join(' '),
           paymentReference: paymentReference || 'FREE_REG',
-          paymentStatus: paymentReference && paymentReference !== 'FREE_REG' ? 'Paid' : 'Pending',
+          paymentStatus: 'Pending',
         });
 
-        navigate({
-          pathname: '/registration-success',
-          search: `?${query.toString()}`,
-        }, { replace: true });
+        if (redirectAfterSubmit) {
+          navigate({
+            pathname: '/registration-success',
+            search: `?${query.toString()}`,
+          }, { replace: true });
+        }
+        return response.data;
       }
     } catch (err) {
       if (err.response?.status === 409) {
@@ -494,16 +487,24 @@ const Register = () => {
     }
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
 
     if (amount > 0) {
-      initializePayment(
-        (response) => handleFinalSubmit(response.reference),
-        () => popup.info('Your payment was cancelled before completion.', {
-          title: 'Payment Cancelled',
-        })
-      );
+      const application = await handleFinalSubmit('PENDING_PAYMENT', false);
+      if (!application?.applicationId) return;
+      try {
+        const payment = await api.post('/api/payments/registration/initialize', {
+          applicationId: application.applicationId,
+          email: formData.email,
+        });
+        if (!payment.data?.authorization_url) throw new Error('No checkout URL returned.');
+        window.location.assign(payment.data.authorization_url);
+      } catch (err) {
+        popup.error(err.response?.data?.error || 'Your application was saved, but we could not open the payment page. Please contact support to complete payment.', {
+          title: 'Payment Could Not Start',
+        });
+      }
     } else {
       handleFinalSubmit();
     }

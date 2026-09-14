@@ -220,7 +220,7 @@ const StudentPortal = ({ setUser }) => {
               </button>
 
               <p className="text-center mt-6 text-[9px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed px-4">
-                Payments are processed securely via Paystack. Your receipt will be generated instantly.
+                Payments are processed securely via SquadCo. Your receipt will be generated instantly.
               </p>
             </div>
 

@@ -63,7 +63,7 @@ exports.registerStudent = async (req, res) => {
             place_of_birth, state_of_origin, nationality, address,
             phone, selectedCourse, nok_name, nok_phone, nok_relation,
             normalizeOptionalText(org_pos), normalizeOptionalText(education), normalizeOptionalText(technical), normalizeOptionalText(qualifications), normalizeOptionalText(experience),
-            payment_ref && payment_ref !== 'FREE_REG' ? 'Paid' : 'Pending',
+            'Pending',
             passportPath, certificatePath, payment_ref
         ];
 
