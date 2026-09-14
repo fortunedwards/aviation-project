@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../lib/api';
+import { openSquadPaymentModal } from '../lib/squadco';
 import { 
   BookOpen,
   AlertCircle, Wallet
@@ -75,9 +76,15 @@ const StudentPortal = ({ setUser }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      if (res.data.authorization_url) {
-        window.location.href = res.data.authorization_url;
-      }
+      if (!res.data.reference) throw new Error('No payment reference returned.');
+      await openSquadPaymentModal({
+        email: profile.email,
+        amount: Number(profile.course_fee),
+        reference: res.data.reference,
+        customerName: profile.full_name || profile.name,
+        onSuccess: () => navigate(`/payment-success?transaction_ref=${encodeURIComponent(res.data.reference)}`),
+        onClose: () => popup.info('Payment was cancelled. You can try again whenever you are ready.', { title: 'Payment Cancelled' }),
+      });
     } catch (err) {
       console.error("Payment Error:", err);
       popup.error('Payment initialization failed. Please try again later.', {

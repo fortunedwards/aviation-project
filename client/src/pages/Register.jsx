@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createSearchParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../lib/api';
+import { openSquadPaymentModal } from '../lib/squadco';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -498,8 +499,21 @@ const Register = () => {
           applicationId: application.applicationId,
           email: formData.email,
         });
-        if (!payment.data?.authorization_url) throw new Error('No checkout URL returned.');
-        window.location.assign(payment.data.authorization_url);
+        if (!payment.data?.reference) throw new Error('No payment reference returned.');
+        let paymentSucceeded = false;
+        await openSquadPaymentModal({
+          email: formData.email,
+          amount,
+          reference: payment.data.reference,
+          customerName: fullName,
+          onSuccess: () => {
+            paymentSucceeded = true;
+            navigate(`/payment-success?transaction_ref=${encodeURIComponent(payment.data.reference)}&flow=registration`);
+          },
+          onClose: () => {
+            if (!paymentSucceeded) popup.info('Payment was cancelled. Your application is saved; please contact support when you are ready to complete payment.', { title: 'Payment Cancelled' });
+          },
+        });
       } catch (err) {
         popup.error(err.response?.data?.error || 'Your application was saved, but we could not open the payment page. Please contact support to complete payment.', {
           title: 'Payment Could Not Start',
