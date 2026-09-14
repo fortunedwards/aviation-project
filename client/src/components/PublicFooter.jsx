@@ -25,10 +25,9 @@ const programLinks = [
 ];
 
 const socialLinks = [
-  { label: 'Facebook', href: 'https://www.facebook.com' },
-  { label: 'Instagram', href: 'https://www.instagram.com' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com' },
-  { label: 'X (Twitter)', href: 'https://x.com' },
+  { label: 'Facebook', href: 'https://www.facebook.com/aeroconsultonline/' },
+  { label: 'Instagram', href: 'https://www.instagram.com/aeroconsulttraining/' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/school/aeroconsult-aviation-training-centre' },
 ];
 
 function PublicFooter() {
