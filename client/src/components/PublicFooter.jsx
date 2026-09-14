@@ -57,7 +57,7 @@ function PublicFooter() {
 
           <p className="flex items-start gap-2 text-sm leading-relaxed text-slate-600">
             <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[#2095D3]" />
-            info@aeroconsultonline.com
+            aeroconsulttraining@yahoo.com
           </p>
         </div>
 
