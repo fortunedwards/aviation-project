@@ -362,7 +362,7 @@ const Register = () => {
     style: 'currency',
     currency: 'NGN',
     maximumFractionDigits: 0,
-  }).format(amount / 100 || 0);
+  }).format(amount || 0);
 
   const stepValidation = {
     1:

@@ -1,6 +1,7 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken'); 
+const crypto = require('crypto');
 const upload = require('../middleware/uploadMiddleware');
 const { logAction } = require('../utils/logger');
 
@@ -58,13 +59,15 @@ exports.registerStudent = async (req, res) => {
             RETURNING id;
         `;
 
+        const pendingPaymentReference = `REG-PENDING-${crypto.randomUUID()}`;
+
         const values = [
             surname, other_names, email, dob, sex,
             place_of_birth, state_of_origin, nationality, address,
             phone, selectedCourse, nok_name, nok_phone, nok_relation,
             normalizeOptionalText(org_pos), normalizeOptionalText(education), normalizeOptionalText(technical), normalizeOptionalText(qualifications), normalizeOptionalText(experience),
             'Pending',
-            passportPath, certificatePath, payment_ref
+            passportPath, certificatePath, pendingPaymentReference
         ];
 
         // 4. Execute the query
@@ -82,7 +85,7 @@ exports.registerStudent = async (req, res) => {
                 application_id: result.rows[0].id,
                 email,
                 course_id: selectedCourse,
-                payment_ref,
+                payment_ref: pendingPaymentReference,
             },
             targetType: 'application',
             targetId: result.rows[0].id,
@@ -103,6 +106,10 @@ exports.registerStudent = async (req, res) => {
             return res.status(500).json({ 
                 error: "Database Schema Mismatch. Did you add passport_url and certificate_url columns?" 
             });
+        }
+
+        if (err.code === '23505') {
+            return res.status(409).json({ error: 'An application or payment reference with these details already exists.' });
         }
 
         res.status(500).json({ error: "Server error during enrollment process" });
