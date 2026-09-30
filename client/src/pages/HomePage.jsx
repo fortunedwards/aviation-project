@@ -299,7 +299,10 @@ function HomePage() {
               >
                 <div className="relative h-64 overflow-hidden rounded-none">
                   <img
-                    src={getCourseHeroImage({ title: event.course_title || event.title }, index)}
+                    src={getCourseHeroImage({
+                      slug: event.course_slug,
+                      title: event.course_title || event.title,
+                    }, index)}
                     alt={event.course_title || event.title}
                     className="h-full w-full rounded-none object-cover transition-transform duration-500 group-hover:scale-105"
                   />
