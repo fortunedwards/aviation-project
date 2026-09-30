@@ -123,9 +123,13 @@ exports.logAction = async ({
 
         const columnState = await loadAuditLogColumnState();
         const requestUser = req?.user || null;
-        const resolvedUserId = userId || requestUser?.id || null;
         const resolvedActorRole = actorRole || requestUser?.role || null;
         const resolvedActorType = actorType || getActorTypeFromRole(resolvedActorRole);
+        // Legacy audit_logs.user_id is constrained to staff_accounts in this
+        // deployment. Preserve the student identity in metadata instead of
+        // attempting an invalid staff foreign-key reference.
+        const isStudentActor = String(resolvedActorRole || '').toLowerCase() === 'student';
+        const resolvedUserId = isStudentActor ? null : (userId || requestUser?.id || null);
         const resolvedActorName = actorName || metadata.actor_name || null;
         const resolvedTargetType = targetType || metadata.target_type || null;
         const resolvedTargetId = targetId || metadata.target_id || null;
@@ -137,6 +141,7 @@ exports.logAction = async ({
             actor_role: resolvedActorRole,
             actor_type: resolvedActorType,
             actor_name: resolvedActorName,
+            actor_user_id: isStudentActor ? (userId || requestUser?.id || null) : null,
             target_type: resolvedTargetType,
             target_id: resolvedTargetId,
             success,
