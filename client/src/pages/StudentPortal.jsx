@@ -1,60 +1,98 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  AlertCircle,
+  ArrowRight,
+  BookOpen,
+  CalendarDays,
+  CheckCircle2,
+  CircleDollarSign,
+  Clock3,
+  Download,
+  FileText,
+  MapPin,
+  MessageSquareMore,
+  ReceiptText,
+  ShieldCheck,
+  Wallet,
+} from 'lucide-react';
 import api from '../lib/api';
 import { openSquadPaymentModal } from '../lib/squadco';
-import { 
-  BookOpen,
-  AlertCircle, Wallet
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import ChatWidget from '../components/ChatWidget';
-import { usePopup } from '../components/context/PopupProvider';
 import SideNavBar from '../components/SideNavBar';
 import TopNavBar from '../components/TopNavBar';
 import CalendarPage from './CalendarPage';
+import { usePopup } from '../components/context/PopupProvider';
 
-const getUserDisplayName = (user) =>
-  user?.name ||
-  user?.full_name ||
-  [user?.surname, user?.other_names].filter(Boolean).join(' ').trim() ||
-  [user?.first_name, user?.last_name].filter(Boolean).join(' ').trim() ||
-  'Student';
+const formatCurrency = (value) =>
+  '₦' + Number(value || 0).toLocaleString('en-NG', { maximumFractionDigits: 2 });
+
+const formatDate = (value, options = { day: 'numeric', month: 'long', year: 'numeric' }) => {
+  if (!value) return 'To be confirmed';
+  const date = new Date(String(value).slice(0, 10) + 'T00:00:00');
+  return Number.isNaN(date.getTime()) ? 'To be confirmed' : date.toLocaleDateString('en-NG', options);
+};
+
+const statusStyle = (status) => {
+  const value = String(status || 'pending').toLowerCase();
+  if (['approved', 'enrolled'].includes(value)) return 'bg-emerald-100 text-emerald-700';
+  if (['rejected', 'declined'].includes(value)) return 'bg-rose-100 text-rose-700';
+  return 'bg-sky-100 text-sky-700';
+};
+
+const getDisplayName = (profile) =>
+  [profile?.surname, profile?.other_names].filter(Boolean).join(' ').trim() || 'Student';
+
+const InfoCard = ({ icon: Icon, label, value, tone = 'sky' }) => (
+  <article className="rounded-[24px] border border-slate-100 bg-white p-5 shadow-sm">
+    <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${
+      tone === 'emerald' ? 'bg-emerald-50 text-emerald-600' : tone === 'amber' ? 'bg-amber-50 text-amber-600' : 'bg-sky-50 text-[#2095D3]'
+    }`}><Icon size={21} /></div>
+    <p className="mt-4 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">{label}</p>
+    <p className="mt-2 text-lg font-black text-[#2B2A4C]">{value}</p>
+  </article>
+);
 
 const StudentPortal = ({ setUser }) => {
   const popup = usePopup();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const navigate = useNavigate();
+  const [paymentStarting, setPaymentStarting] = useState(false);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchStudentData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const res = await api.get('/api/students/profile', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setProfile(res.data.data);
-      } catch (err) {
-        console.error("Portal load error", err);
-        if (err.response?.status === 401) handleLogout();
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStudentData();
+  const token = localStorage.getItem('token');
+  const user = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem('user') || 'null'); } catch { return null; }
   }, []);
 
-  const handleLogout = async () => {
-    const token = localStorage.getItem('token');
-
+  const loadProfile = async () => {
+    setError('');
     try {
-      if (token) {
-        await api.post('/api/auth/logout', {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      }
+      const response = await api.get('/api/students/profile', { headers: { Authorization: 'Bearer ' + token } });
+      setProfile(response.data?.data || null);
     } catch (err) {
-      console.error('Logout audit failed', err);
+      const message = err.response?.data?.error || err.message || 'Unable to load your student records.';
+      setError(message);
+      if ([401, 403].includes(err.response?.status)) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+        navigate('/login');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { loadProfile(); }, []);
+
+  const handleLogout = async () => {
+    try {
+      if (token) await api.post('/api/auth/logout', {}, { headers: { Authorization: 'Bearer ' + token } });
+    } catch (err) {
+      console.error('Student logout audit error:', err.message);
     } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -64,191 +102,91 @@ const StudentPortal = ({ setUser }) => {
   };
 
   const handlePayment = async () => {
-    if (!profile?.course_fee || profile.course_fee <= 0) {
-      return popup.warning('Tuition fee has not been assigned yet. Please contact the Accountable Manager.', {
-        title: 'Fee Not Available',
-      });
+    if (Number(profile?.course_fee || 0) <= 0) {
+      popup.warning('Your tuition fee has not been assigned yet. Please contact the admissions office.', { title: 'Tuition Fee Unavailable' });
+      return;
     }
-    
+    setPaymentStarting(true);
     try {
-      const token = localStorage.getItem('token');
-      const res = await api.post('/api/payments/initialize', {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (!res.data.reference) throw new Error('No payment reference returned.');
+      const response = await api.post('/api/payments/initialize', {}, { headers: { Authorization: 'Bearer ' + token } });
+      const reference = response.data?.reference;
+      if (!reference) throw new Error('The payment service did not return a payment reference.');
       await openSquadPaymentModal({
         email: profile.email,
         amount: Number(profile.course_fee),
-        reference: res.data.reference,
-        customerName: profile.full_name || profile.name,
-        onSuccess: () => navigate(`/payment-success?transaction_ref=${encodeURIComponent(res.data.reference)}`),
-        onClose: () => popup.info('Payment was cancelled. You can try again whenever you are ready.', { title: 'Payment Cancelled' }),
+        reference,
+        customerName: getDisplayName(profile),
+        onSuccess: () => navigate('/payment-success?transaction_ref=' + encodeURIComponent(reference)),
+        onClose: () => popup.info('Payment was not completed. You can return and try again when ready.', { title: 'Payment Cancelled' }),
       });
     } catch (err) {
-      console.error("Payment Error:", err);
-      popup.error('Payment initialization failed. Please try again later.', {
-        title: 'Unable To Start Payment',
-      });
+      popup.error(err.response?.data?.error || err.message || 'Unable to start tuition payment.', { title: 'Payment Could Not Start' });
+    } finally {
+      setPaymentStarting(false);
     }
   };
 
-  if (loading) return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-900">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="font-black text-white text-xs uppercase tracking-[0.3em]">Syncing Dossier...</p>
-    </div>
-  );
+  const paymentPaid = String(profile?.payment_status || '').toLowerCase() === 'paid';
+  const admissionStatus = profile?.admission_status || 'Pending';
+
+  if (loading) {
+    return <div className="flex min-h-screen flex-col items-center justify-center bg-[#F4FAFF]"><div className="h-12 w-12 animate-spin rounded-full border-4 border-[#2095D3] border-t-transparent" /><p className="mt-5 text-xs font-black uppercase tracking-[0.25em] text-slate-500">Loading your learning dashboard</p></div>;
+  }
 
   return (
-    <div className="min-h-screen flex bg-[#F4FAFF]">
-      <SideNavBar
-        role="Student"
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        onLogout={handleLogout}
-      />
-      <TopNavBar
-        role="Student"
-        userName={getUserDisplayName(profile)}
-      />
+    <div className="flex min-h-screen bg-[#F4FAFF] text-[#2B2A4C]">
+      <SideNavBar role="Student" activeTab={activeTab} onTabChange={setActiveTab} onLogout={handleLogout} />
+      <TopNavBar role="Student" userName={getDisplayName(profile)} notificationCount={profile?.instructor_remarks ? 1 : 0} onNotificationsClick={() => setActiveTab('dashboard')} />
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 overflow-y-auto px-6 pb-6 pt-24 md:px-12 md:pb-12 md:pt-28">
-        {activeTab === 'calendar' ? (
-          <CalendarPage
-            title="Student Calendar"
-            subtitle="Stay on top of classes, simulator slots, and key academic dates."
-          />
-        ) : (
-        <>
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
-          <div>
-            <p className="text-blue-600 font-black text-[10px] uppercase tracking-widest mb-1">Authenticated Portal</p>
-            <h2 className="text-4xl font-black text-slate-900 tracking-tight">Welcome, {profile?.surname}</h2>
-          </div>
-          <div className="flex items-center gap-4 bg-white p-2 pr-6 rounded-full shadow-sm border border-slate-200">
-            <div className="h-10 w-10 bg-slate-100 rounded-full flex items-center justify-center font-black text-slate-600">
-                {profile?.surname?.[0]}
-            </div>
-            <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Status</p>
-                <p className="text-xs font-bold text-green-600">Account Active</p>
-            </div>
-          </div>
-        </header>
+      <main className="min-w-0 flex-1 px-6 pb-10 pt-24 md:px-10 md:pt-28">
+        {error && <div className="mb-6 flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-700"><AlertCircle size={19} />{error}</div>}
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          
-          {/* PRIMARY ENROLLMENT CARD */}
-          <div className="xl:col-span-2 space-y-8">
-            <div className="bg-white p-10 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-8">
-                 <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                    profile?.admission_status === 'Approved' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
-                 }`}>
-                   {profile?.admission_status}
-                 </span>
-              </div>
+        {activeTab === 'calendar' && <CalendarPage title="My Training Calendar" subtitle="View your scheduled course dates and important academy events." />}
 
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
-                <div className="bg-blue-50 p-6 rounded-3xl text-blue-600 border border-blue-100">
-                  <BookOpen size={48} />
-                </div>
-                <div>
-                  <h4 className="text-3xl font-black text-slate-900 leading-tight mb-2">{profile?.course_name}</h4>
-                  <p className="text-slate-500 font-medium max-w-md leading-relaxed">
-                    Your admission has been processed. Please complete your financial clearance to secure your slot in the upcoming batch.
-                  </p>
-                </div>
-              </div>
+        {activeTab === 'dashboard' && (
+          <div className="mx-auto max-w-7xl">
+            <header className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+              <div><p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#2095D3]">Student Learning Portal</p><h1 className="mt-2 text-3xl font-black tracking-tight text-[#2B2A4C] sm:text-4xl">Welcome back, {profile?.surname || 'Student'}.</h1><p className="mt-2 text-sm text-slate-500">Here is your admission, course, and payment overview.</p></div>
+              <span className={`inline-flex w-fit rounded-full px-4 py-2 text-[11px] font-black uppercase tracking-[0.16em] ${statusStyle(admissionStatus)}`}>{admissionStatus} admission</span>
+            </header>
 
-              <div className="mt-12 pt-8 border-t border-slate-50 grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Total Tuition</p>
-                  <p className="text-2xl font-black text-slate-900">
-                    {profile?.course_fee ? `₦${Number(profile.course_fee).toLocaleString()}` : 'PENDING'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Commencement</p>
-                  <p className="text-2xl font-black text-slate-900 uppercase">Q2 2026</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Reference ID</p>
-                  <p className="text-2xl font-black text-slate-900 uppercase">{profile?.payment_ref?.slice(0,8) || '---'}</p>
-                </div>
-              </div>
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              <InfoCard icon={BookOpen} label="My Course" value={profile?.course_name || 'Not assigned'} />
+              <InfoCard icon={CircleDollarSign} label="Tuition" value={formatCurrency(profile?.course_fee)} tone="amber" />
+              <InfoCard icon={paymentPaid ? CheckCircle2 : Wallet} label="Payment" value={paymentPaid ? 'Paid' : 'Outstanding'} tone={paymentPaid ? 'emerald' : 'amber'} />
+              <InfoCard icon={CalendarDays} label="Next Training" value={formatDate(profile?.next_event_date, { day: 'numeric', month: 'short', year: 'numeric' })} />
             </div>
 
-            {/* REMARKS & NOTIFICATIONS */}
-            <div className="bg-blue-600 rounded-[2.5rem] p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-6 text-center md:text-left">
-                    <div className="bg-white/20 p-4 rounded-2xl">
-                        <AlertCircle size={32} />
-                    </div>
-                    <div>
-                        <p className="text-blue-100 text-[10px] font-black uppercase tracking-widest">Admission Officer Remarks</p>
-                        <p className="text-lg font-bold italic">"{profile?.instructor_remarks || 'Your application is under standard review.'}"</p>
-                    </div>
+            <div className="mt-8 grid gap-8 xl:grid-cols-3">
+              <section className="xl:col-span-2 rounded-[30px] border border-slate-100 bg-white p-7 shadow-sm sm:p-9">
+                <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-start"><div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#2095D3]">Programme dossier</p><h2 className="mt-3 text-2xl font-black text-[#2B2A4C]">{profile?.course_name || 'Your training programme'}</h2><p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">{profile?.course_description || 'Your course information will appear here once it is assigned.'}</p></div><BookOpen className="h-10 w-10 shrink-0 text-[#2095D3]" /></div>
+                <div className="mt-8 grid gap-4 border-t border-slate-100 pt-6 sm:grid-cols-3">
+                  <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Duration</p><p className="mt-2 text-sm font-bold text-slate-700">{profile?.course_duration || 'To be confirmed'}</p></div>
+                  <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Application ID</p><p className="mt-2 break-all text-sm font-bold text-slate-700">{profile?.application_id || '—'}</p></div>
+                  <div><p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Submitted</p><p className="mt-2 text-sm font-bold text-slate-700">{formatDate(profile?.submitted_at)}</p></div>
                 </div>
+              </section>
+
+              <section className="rounded-[30px] bg-[#2B2A4C] p-7 text-white shadow-xl shadow-slate-300/40">
+                <div className="flex items-center gap-3 text-[#99D2F2]"><Wallet size={23} /><p className="text-[10px] font-black uppercase tracking-[0.2em]">Financial clearance</p></div>
+                <p className="mt-7 text-4xl font-black">{paymentPaid ? 'Cleared' : formatCurrency(profile?.course_fee)}</p>
+                <p className="mt-2 text-sm leading-6 text-white/70">{paymentPaid ? 'Your tuition payment has been recorded.' : 'Complete your tuition payment to secure your training place.'}</p>
+                {!paymentPaid && <button type="button" onClick={handlePayment} disabled={paymentStarting} className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#2095D3] px-5 py-4 text-sm font-black transition hover:bg-[#1785be] disabled:cursor-not-allowed disabled:opacity-60">{paymentStarting ? 'Opening payment…' : 'Pay Tuition'}<ArrowRight size={17} /></button>}
+              </section>
+            </div>
+
+            <div className="mt-8 grid gap-8 lg:grid-cols-2">
+              <section className="rounded-[30px] border border-slate-100 bg-white p-7 shadow-sm"><div className="flex items-center gap-3"><CalendarDays className="text-[#2095D3]" /><h2 className="text-lg font-black">Upcoming course date</h2></div>{profile?.next_event_date ? <div className="mt-6 rounded-2xl bg-sky-50 p-5"><p className="text-xl font-black text-[#2B2A4C]">{formatDate(profile.next_event_date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p><p className="mt-2 flex items-center gap-2 text-sm text-slate-600"><Clock3 size={15} />{profile.next_event_start_time || 'Time to be confirmed'}{profile.next_event_end_time ? ' – ' + profile.next_event_end_time : ''}</p>{profile.next_event_location && <p className="mt-2 flex items-center gap-2 text-sm text-slate-600"><MapPin size={15} />{profile.next_event_location}</p>}</div> : <p className="mt-6 rounded-2xl bg-slate-50 p-5 text-sm leading-6 text-slate-500">There is no scheduled course date yet. You will see it here when the academy adds one to the training calendar.</p>}</section>
+              <section className="rounded-[30px] border border-slate-100 bg-white p-7 shadow-sm"><div className="flex items-center gap-3"><MessageSquareMore className="text-[#2095D3]" /><h2 className="text-lg font-black">Admissions update</h2></div><p className="mt-6 rounded-2xl bg-sky-50 p-5 text-sm leading-7 text-slate-700">{profile?.instructor_remarks || 'Your application is being reviewed. We will share an update here when the admissions team adds remarks.'}</p><p className="mt-4 text-xs leading-5 text-slate-500">Need assistance? Use the support chat button at the bottom-right of this page.</p></section>
             </div>
           </div>
-
-          {/* FINANCE SIDEBAR */}
-          <div className="space-y-8">
-            <div className="bg-slate-900 text-white p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-600/20 rounded-full blur-3xl"></div>
-              
-              <div className="flex items-center gap-3 mb-8">
-                <Wallet className="text-blue-400" size={24} />
-                <h3 className="font-black uppercase tracking-widest text-xs text-blue-400">Financial Status</h3>
-              </div>
-
-              <div className="mb-10">
-                <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Outstanding Balance</p>
-                <p className="text-5xl font-black tracking-tighter">
-                    ₦{profile?.course_fee ? Number(profile.course_fee).toLocaleString() : '0'}
-                </p>
-              </div>
-
-              <div className="space-y-4 mb-10">
-                <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10">
-                    <span className="text-xs font-bold text-slate-400">Payment Status</span>
-                    <span className="text-xs font-black uppercase text-amber-400">Unpaid</span>
-                </div>
-              </div>
-
-              <button 
-                onClick={handlePayment}
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-lg shadow-blue-600/20 active:scale-95"
-              >
-                Clear Tuition Fee
-              </button>
-
-              <p className="text-center mt-6 text-[9px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed px-4">
-                Payments are processed securely via SquadCo. Your receipt will be generated instantly.
-              </p>
-            </div>
-
-            {/* QUICK LINKS */}
-            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200">
-                <h4 className="font-black text-slate-400 text-[10px] uppercase tracking-widest mb-6 border-b border-slate-50 pb-4">Help & Support</h4>
-                <div className="space-y-4">
-                    <button className="w-full text-left text-xs font-bold text-slate-600 hover:text-blue-600 transition-colors flex items-center justify-between">
-                        Contact Admissions Office <div className="h-1 w-1 bg-slate-200 rounded-full"></div>
-                    </button>
-                    <button className="w-full text-left text-xs font-bold text-slate-600 hover:text-blue-600 transition-colors flex items-center justify-between">
-                        Request Fee Deferment <div className="h-1 w-1 bg-slate-200 rounded-full"></div>
-                    </button>
-                </div>
-            </div>
-          </div>
-        </div>
-        </>
         )}
-        </main>
-        <ChatWidget user={{ ...profile, id: profile.student_user_id }} />
+
+        {activeTab === 'finance' && <section className="mx-auto max-w-5xl"><header className="mb-8"><p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#2095D3]">Finance</p><h1 className="mt-2 text-3xl font-black">Payments & receipts</h1></header><div className="grid gap-6 md:grid-cols-2"><article className="rounded-[30px] bg-[#2B2A4C] p-8 text-white"><ReceiptText className="text-[#99D2F2]" size={28} /><p className="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Tuition payment status</p><p className="mt-2 text-3xl font-black">{paymentPaid ? 'Paid' : 'Payment due'}</p><p className="mt-4 text-sm text-white/70">Course tuition: {formatCurrency(profile?.course_fee)}</p>{profile?.payment_ref && <p className="mt-2 break-all text-xs text-white/50">Reference: {profile.payment_ref}</p>}{!paymentPaid && <button type="button" onClick={handlePayment} disabled={paymentStarting} className="mt-7 rounded-2xl bg-[#2095D3] px-6 py-4 text-sm font-black disabled:opacity-60">{paymentStarting ? 'Opening payment…' : 'Pay securely with SquadCo'}</button>}</article><article className="rounded-[30px] border border-slate-100 bg-white p-8 shadow-sm"><ShieldCheck className="text-emerald-600" size={28} /><h2 className="mt-6 text-xl font-black">Payment safety</h2><p className="mt-3 text-sm leading-7 text-slate-600">Payments are processed by SquadCo. A confirmed payment updates your portal automatically. If a debit occurs but the status does not update, contact support with the payment reference above.</p></article></div></section>}
+
+        {activeTab === 'documents' && <section className="mx-auto max-w-5xl"><header className="mb-8"><p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#2095D3]">Documents</p><h1 className="mt-2 text-3xl font-black">My application documents</h1><p className="mt-2 text-sm text-slate-500">View the files submitted with your application.</p></header><div className="grid gap-6 md:grid-cols-2">{[{ title: 'Passport photograph', url: profile?.passport_url, icon: FileText }, { title: 'Supporting certificate', url: profile?.certificate_url, icon: Download }].map(({ title, url, icon: Icon }) => <article key={title} className="rounded-[30px] border border-slate-100 bg-white p-7 shadow-sm"><Icon className="text-[#2095D3]" size={28} /><h2 className="mt-5 text-xl font-black">{title}</h2><p className="mt-2 text-sm text-slate-500">{url ? 'Your submitted document is available to view.' : 'No document was submitted for this item.'}</p>{url && <a href={url} target="_blank" rel="noreferrer" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#2095D3] px-5 py-3 text-sm font-bold text-white">Open document <ArrowRight size={16} /></a>}</article>)}</div></section>}
+      </main>
+      <ChatWidget user={{ ...user, ...profile, id: profile?.student_user_id || user?.id }} />
     </div>
   );
 };
