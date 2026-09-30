@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ChevronDown, Clock3, Search, Star } from 'lucide-react';
+import { CalendarDays, ChevronDown, Clock3, Search, Star } from 'lucide-react';
 import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
@@ -24,6 +24,7 @@ const normalizePrice = (course) => {
 function CoursesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [courses, setCourses] = useState([]);
+  const [upcomingCourseEvents, setUpcomingCourseEvents] = useState([]);
   const [coursesError, setCoursesError] = useState(false);
   const [queryInput, setQueryInput] = useState(() => searchParams.get('q') || '');
   const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') || '');
@@ -38,6 +39,25 @@ function CoursesPage() {
       .then((response) => setCourses(Array.isArray(response.data) ? response.data : []))
       .catch(() => setCoursesError(true));
   }, []);
+
+  useEffect(() => {
+    api.get('/api/calendar/public/events')
+      .then((response) => {
+        const events = Array.isArray(response.data?.data) ? response.data.data : [];
+        setUpcomingCourseEvents(events.filter((event) =>
+          String(event.category || '').toLowerCase() === 'course' && Boolean(event.course_slug)
+        ));
+      })
+      .catch(() => setUpcomingCourseEvents([]));
+  }, []);
+
+  const upcomingDatesByCourse = useMemo(() => upcomingCourseEvents.reduce((dates, event) => {
+    const slug = String(event.course_slug || '');
+    if (!slug) return dates;
+    if (!dates[slug]) dates[slug] = [];
+    dates[slug].push(event);
+    return dates;
+  }, {}), [upcomingCourseEvents]);
 
   const categories = useMemo(() => {
     const values = Array.from(new Set(courses.map((course) => normalizeCategory(course)).filter(Boolean)));
@@ -55,8 +75,15 @@ function CoursesPage() {
       const searchMatch = q ? title.includes(q) || description.includes(q) : true;
 
       return categoryMatch && searchMatch;
+    }).sort((first, second) => {
+      const firstEvent = upcomingDatesByCourse[first.slug]?.[0];
+      const secondEvent = upcomingDatesByCourse[second.slug]?.[0];
+      if (firstEvent && secondEvent) return String(firstEvent.event_date).localeCompare(String(secondEvent.event_date));
+      if (firstEvent) return -1;
+      if (secondEvent) return 1;
+      return String(first.title || '').localeCompare(String(second.title || ''));
     });
-  }, [courses, searchTerm, selectedCategory]);
+  }, [courses, searchTerm, selectedCategory, upcomingDatesByCourse]);
 
   const visibleCourses = useMemo(() => {
     return filteredCourses.slice(0, visibleCount);
@@ -193,6 +220,7 @@ function CoursesPage() {
                   const duration = normalizeDuration(course);
                   const courseIndex = courses.findIndex((item) => item.slug === course.slug);
                   const image = getCourseHeroImage(course, courseIndex >= 0 ? courseIndex : index);
+                  const nextEvent = upcomingDatesByCourse[course.slug]?.[0];
 
                   return (
                     <Link
@@ -208,6 +236,12 @@ function CoursesPage() {
                       />
 
                       <div className="px-1 pb-2 pt-5">
+                        {nextEvent && (
+                          <p className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-[#2095D3]">
+                            <CalendarDays className="h-4 w-4" />
+                            Upcoming: {new Date(String(nextEvent.event_date).slice(0, 10) + 'T00:00:00').toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </p>
+                        )}
                         <h3 className="line-clamp-2 text-xl font-bold text-[#2B2A4C] transition group-hover:text-[#2095D3]">
                           {course.title || 'Untitled Course'}
                         </h3>

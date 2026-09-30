@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
+  CalendarDays,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
   Eye,
   Mouse,
   Rocket,
@@ -12,43 +16,19 @@ import {
 import PublicHeader from '../components/PublicHeader';
 import PublicFooter from '../components/PublicFooter';
 import PublicSupportChat from '../components/PublicSupportChat';
-import { HOME_FEATURE_IMAGE, HOME_HERO_SLIDES, HOME_UPCOMING_TRAINING_IMAGES } from '../data/images';
+import { HOME_FEATURE_IMAGE, HOME_HERO_SLIDES, getCourseHeroImage } from '../data/images';
+import api from '../lib/api';
 
-const UPCOMING_TRAININGS = [
-  {
-    title: 'Flight Dispatcher/Flight Operations Officer (Basic) (FDB)',
-    slug: 'flight-dispatcher-flight-operations-officer-basic-fdb',
-    date: 'Next Batch',
-    badge: 'Enrollment Open',
-    badgeTone: 'bg-[#2095D3]',
-    description:
-      'Foundational training preparing participants for a career as Flight Dispatchers/Flight Operations Officers, covering core technical and operational subjects.',
-    image:
-      HOME_UPCOMING_TRAINING_IMAGES[0],
-  },
-  {
-    title: 'Cabin Crew (Initial) Training (CCI)',
-    slug: 'cabin-crew-initial-training-cci',
-    date: 'Next Batch',
-    badge: 'NCAA Approved',
-    badgeTone: 'bg-[#2B2A4C]',
-    description:
-      'Comprehensive initial training for aspiring cabin crew members, covering safety, emergency procedures, customer service, and aircraft-specific knowledge.',
-    image:
-      HOME_UPCOMING_TRAINING_IMAGES[1],
-  },
-  {
-    title: 'Aircraft Maintenance Licence Preparatory Course (AMLPC) (A&P)',
-    slug: 'aircraft-maintenance-licence-preparatory-course-amlpc-ap',
-    date: 'Next Batch',
-    badge: 'Safety Module',
-    badgeTone: 'bg-[#45A1D6]',
-    description:
-      'Extensive preparatory course for Aircraft Maintenance Licence (Airframe & Powerplant) covering all required EASA/NCAA modules.',
-    image:
-      HOME_UPCOMING_TRAINING_IMAGES[2],
-  },
-];
+const formatTrainingDate = (value) => {
+  const date = new Date(String(value || '').slice(0, 10) + 'T00:00:00');
+  if (Number.isNaN(date.getTime())) return 'Date to be confirmed';
+  return date.toLocaleDateString('en-NG', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+};
 
 const REVIEWS = [
   {
@@ -107,6 +87,9 @@ function RevealSection({ className = '', children }) {
 function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [progress, setProgress] = useState(1);
+  const [upcomingCourses, setUpcomingCourses] = useState([]);
+  const [upcomingCoursesLoading, setUpcomingCoursesLoading] = useState(true);
+  const [upcomingCoursePage, setUpcomingCoursePage] = useState(0);
 
   useEffect(() => {
     const durationMs = 7000;
@@ -126,10 +109,30 @@ function HomePage() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    api.get('/api/calendar/public/events')
+      .then((response) => {
+        const events = Array.isArray(response.data?.data) ? response.data.data : [];
+        setUpcomingCourses(events.filter((event) =>
+          String(event.category || '').toLowerCase() === 'course' && Boolean(event.course_slug)
+        ).slice(0, 3));
+      })
+      .catch(() => setUpcomingCourses([]))
+      .finally(() => setUpcomingCoursesLoading(false));
+  }, []);
+
   const heroStyle = useMemo(
     () => ({ backgroundImage: `url(${HOME_HERO_SLIDES[activeSlide]})` }),
     [activeSlide]
   );
+  const upcomingCoursePages = Math.ceil(upcomingCourses.length / 3);
+  const displayedUpcomingCourses = upcomingCourses.slice(upcomingCoursePage * 3, upcomingCoursePage * 3 + 3);
+
+  useEffect(() => {
+    if (upcomingCoursePage >= upcomingCoursePages && upcomingCoursePages > 0) {
+      setUpcomingCoursePage(upcomingCoursePages - 1);
+    }
+  }, [upcomingCoursePage, upcomingCoursePages]);
 
   return (
     <div className="bg-white text-[#2B2A4C]">
@@ -254,34 +257,72 @@ function HomePage() {
             </Link>
           </div>
 
+          {upcomingCoursesLoading && <p className="py-10 text-center text-sm text-slate-500">Loading upcoming course dates…</p>}
+          {!upcomingCoursesLoading && upcomingCourses.length === 0 && (
+            <p className="rounded-xl border border-slate-100 bg-white px-6 py-10 text-center text-sm text-slate-500">
+              No upcoming course dates are scheduled at the moment. Please check the training calendar again soon.
+            </p>
+          )}
+          {!upcomingCoursesLoading && upcomingCourses.length > 0 && (
+          <>
+            {upcomingCoursePages > 1 && (
+              <div className="mb-6 flex items-center justify-end gap-3">
+                <p className="mr-auto text-sm font-medium text-slate-500">
+                  Showing {upcomingCoursePage * 3 + 1}–{Math.min((upcomingCoursePage + 1) * 3, upcomingCourses.length)} of {upcomingCourses.length} upcoming course dates
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setUpcomingCoursePage((page) => Math.max(0, page - 1))}
+                  disabled={upcomingCoursePage === 0}
+                  aria-label="Show previous upcoming courses"
+                  className="rounded-full border border-slate-200 p-2 text-[#2B2A4C] transition hover:border-[#2095D3] hover:text-[#2095D3] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUpcomingCoursePage((page) => Math.min(upcomingCoursePages - 1, page + 1))}
+                  disabled={upcomingCoursePage === upcomingCoursePages - 1}
+                  aria-label="Show more upcoming courses"
+                  className="rounded-full border border-slate-200 p-2 text-[#2B2A4C] transition hover:border-[#2095D3] hover:text-[#2095D3] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            )}
           <div className="grid gap-8 md:grid-cols-3">
-            {UPCOMING_TRAININGS.map((course) => (
+            {displayedUpcomingCourses.map((event, index) => (
               <Link
-                key={course.title}
-                to={`/courses/${course.slug}`}
+                key={event.id}
+                to={`/courses/${event.course_slug}`}
                 className="group block overflow-hidden rounded-none border border-slate-100 bg-white shadow-sm transition-all duration-300 hover:shadow-2xl"
               >
                 <div className="relative h-64 overflow-hidden rounded-none">
                   <img
-                    src={course.image}
-                    alt={course.title}
+                    src={getCourseHeroImage({ title: event.course_title || event.title }, index)}
+                    alt={event.course_title || event.title}
                     className="h-full w-full rounded-none object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className={`absolute top-4 left-4 ${course.badgeTone} px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white`}>
-                    {course.badge}
+                  <div className="absolute left-4 top-4 bg-[#2095D3] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+                    Upcoming Course
                   </div>
                 </div>
                 <div className="p-8">
-                  <h4 className="mb-4 line-clamp-2 text-xl font-bold text-brand-deep">{course.title}</h4>
-                  <p className="mb-6 line-clamp-3 text-sm leading-relaxed text-slate-500">{course.description}</p>
-                  <div className="flex items-center justify-between border-t border-slate-50 pt-6">
-                    <span className="text-sm font-bold text-brand-primary">{course.date}</span>
+                  <h4 className="mb-4 line-clamp-2 text-xl font-bold text-brand-deep">{event.course_title || event.title}</h4>
+                  <p className="mb-6 line-clamp-3 text-sm leading-relaxed text-slate-500">
+                    {event.course_description || event.description || 'Course details are available on the course page.'}
+                  </p>
+                  <div className="flex items-center justify-between gap-3 border-t border-slate-50 pt-6">
+                    <span className="flex items-center gap-2 text-sm font-bold text-brand-primary"><CalendarDays className="h-4 w-4" />{formatTrainingDate(event.event_date)}</span>
                     <ArrowRight className="h-5 w-5 text-slate-300 transition-colors group-hover:text-brand-primary" />
                   </div>
+                  {event.course_duration && <p className="mt-3 flex items-center gap-2 text-xs font-semibold text-slate-500"><Clock3 className="h-4 w-4" />{event.course_duration}</p>}
                 </div>
               </Link>
             ))}
           </div>
+          </>
+          )}
         </RevealSection>
       </section>
 

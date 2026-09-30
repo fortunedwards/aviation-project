@@ -87,12 +87,27 @@ exports.getCalendarEvents = async (req, res) => {
 exports.getPublicCalendarEvents = async (_req, res) => {
   try {
     const result = await db.query(`
-      SELECT e.id, e.title, e.category, e.event_date, e.end_date, e.start_time, e.end_time, e.is_all_day, e.location, e.description, c.slug AS course_slug
+      SELECT
+        e.id,
+        e.title,
+        e.category,
+        e.event_date,
+        e.end_date,
+        e.start_time,
+        e.end_time,
+        e.is_all_day,
+        e.location,
+        e.description,
+        e.course_id,
+        c.title AS course_title,
+        c.slug AS course_slug,
+        c.duration AS course_duration,
+        c.course_description,
+        c.course_fee AS course_price
       FROM calendar_events e
       LEFT JOIN courses c ON c.id = e.course_id
       WHERE e.event_date >= CURRENT_DATE
       ORDER BY e.event_date ASC, e.start_time ASC NULLS LAST, e.created_at DESC
-      LIMIT 100
     `);
     res.status(200).json({ success: true, data: result.rows });
   } catch (err) {
