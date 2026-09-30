@@ -423,18 +423,29 @@ const Register = () => {
     }
   };
 
-  const handleFinalSubmit = async (paymentReference = 'FREE_REG', redirectAfterSubmit = true) => {
+  const getSubmissionError = (err, fallback) =>
+    err.response?.data?.error ||
+    err.response?.data?.message ||
+    err.message ||
+    fallback;
+
+  const validateFinalSubmission = () => {
     if (!passportFile) {
-      return popup.warning('Please upload and crop your passport photograph.', {
+      popup.warning('Please upload and crop your passport photograph.', {
         title: 'Passport Photo Required',
       });
+      return false;
     }
     if (!acceptedDeclaration) {
-      return popup.warning('Please confirm the declaration before submitting.', {
+      popup.warning('Please confirm the declaration before submitting.', {
         title: 'Declaration Required',
       });
+      return false;
     }
+    return true;
+  };
 
+  const buildRegistrationData = (paymentReference) => {
     const data = new FormData();
     data.append('passport', passportFile);
     if (certFile) data.append('certificates', certFile);
@@ -446,28 +457,34 @@ const Register = () => {
     });
 
     data.append('payment_ref', paymentReference);
+    return data;
+  };
+
+  const navigateToSuccess = (applicationId, paymentReference, paymentStatus) => {
+    const query = createSearchParams({
+      applicationId: String(applicationId || ''),
+      email: formData.email || '',
+      courseTitle: selectedCourseDetails?.title || 'Selected course',
+      fullName: [formData.surname, formData.other_names].filter(Boolean).join(' '),
+      paymentReference: paymentReference || 'FREE_REG',
+      paymentStatus,
+    });
+    navigate({
+      pathname: '/registration-success',
+      search: '?' + query.toString(),
+    }, { replace: true });
+  };
+
+  const handleFinalSubmit = async () => {
+    if (!validateFinalSubmission()) return null;
 
     try {
-      const response = await api.post('/api/auth/register-student', data, {
+      const response = await api.post('/api/auth/register-student', buildRegistrationData('FREE_REG'), {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       if (response.data.success) {
-        const query = createSearchParams({
-          applicationId: String(response.data.applicationId || ''),
-          email: formData.email || '',
-          courseTitle: selectedCourseDetails?.title || 'Selected course',
-          fullName: [formData.surname, formData.other_names].filter(Boolean).join(' '),
-          paymentReference: paymentReference || 'FREE_REG',
-          paymentStatus: 'Pending',
-        });
-
-        if (redirectAfterSubmit) {
-          navigate({
-            pathname: '/registration-success',
-            search: `?${query.toString()}`,
-          }, { replace: true });
-        }
+        navigateToSuccess(response.data.applicationId, 'FREE_REG', 'Pending');
         return response.data;
       }
     } catch (err) {
@@ -481,10 +498,11 @@ const Register = () => {
           details: err.response.data.errors.map((e) => e.message),
         });
       } else {
-        popup.error(err.response?.data?.error || 'Error submitting application.', {
+        popup.error(getSubmissionError(err, 'Unable to submit the application.'), {
           title: 'Submission Failed',
         });
       }
+      return null;
     }
   };
 
@@ -492,30 +510,43 @@ const Register = () => {
     event.preventDefault();
 
     if (amount > 0) {
-      const application = await handleFinalSubmit('PENDING_PAYMENT', false);
-      if (!application?.applicationId) return;
+      if (!validateFinalSubmission()) return;
       try {
-        const payment = await api.post('/api/payments/registration/initialize', {
-          applicationId: application.applicationId,
-          email: formData.email,
+        const payment = await api.post('/api/payments/registration/prepare', buildRegistrationData('PENDING_PAYMENT'), {
+          headers: { 'Content-Type': 'multipart/form-data' },
         });
-        if (!payment.data?.reference) throw new Error('No payment reference returned.');
+        if (!payment.data?.reference) throw new Error('The server did not return a payment reference.');
         let paymentSucceeded = false;
+        let paymentProcessing = false;
         await openSquadPaymentModal({
           email: formData.email,
-          amount,
+          amount: Number(payment.data.amount),
           reference: payment.data.reference,
           customerName: fullName,
-          onSuccess: () => {
-            paymentSucceeded = true;
-            navigate(`/payment-success?transaction_ref=${encodeURIComponent(payment.data.reference)}&flow=registration`);
+          onSuccess: async () => {
+            paymentProcessing = true;
+            try {
+              const completed = await api.post('/api/payments/registration/complete/' + encodeURIComponent(payment.data.reference));
+              paymentSucceeded = true;
+              navigateToSuccess(completed.data.applicationId, payment.data.reference, 'Paid');
+            } catch (err) {
+              popup.error(getSubmissionError(err, 'Your payment was received but your application could not be finalized.'), {
+                title: 'Payment Verification Needed',
+              });
+            } finally {
+              paymentProcessing = false;
+            }
           },
           onClose: () => {
-            if (!paymentSucceeded) popup.info('Payment was cancelled. Your application is saved; please contact support when you are ready to complete payment.', { title: 'Payment Cancelled' });
+            if (!paymentSucceeded && !paymentProcessing) {
+              popup.info('Payment was not completed. Your application was not submitted and you may try again.', {
+                title: 'Payment Cancelled',
+              });
+            }
           },
         });
       } catch (err) {
-        popup.error(err.response?.data?.error || 'Your application was saved, but we could not open the payment page. Please contact support to complete payment.', {
+        popup.error(getSubmissionError(err, 'Unable to start payment. Your application has not been submitted.'), {
           title: 'Payment Could Not Start',
         });
       }

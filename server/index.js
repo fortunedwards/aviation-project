@@ -337,6 +337,18 @@ app.get('/', (req, res) => {
   res.send('Aeroconsult is Live with WebSockets...');
 });
 
+// Return the real, actionable request error (for example, an invalid upload
+// type or file-size limit) instead of Express's generic HTML error response.
+app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
+  console.error('Request error:', err.message);
+  const status = err.statusCode || (err.code === 'LIMIT_FILE_SIZE' ? 400 : 500);
+  const message = err.code === 'LIMIT_FILE_SIZE'
+    ? 'The uploaded file is larger than the 5 MB limit.'
+    : (err.message || 'The request could not be completed.');
+  res.status(status).json({ success: false, error: message });
+});
+
 server.listen(PORT, () => {
   console.log(`Aeroconsult Server soaring on port ${PORT}`);
 });

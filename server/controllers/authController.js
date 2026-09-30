@@ -4,15 +4,10 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const upload = require('../middleware/uploadMiddleware');
 const { logAction } = require('../utils/logger');
+const { insertApplication } = require('../services/registrationService');
 
 exports.registerStudent = async (req, res) => {
     try {
-        const normalizeOptionalText = (value) => {
-            if (typeof value !== 'string') return null;
-            const trimmed = value.trim();
-            return trimmed ? trimmed : null;
-        };
-
         const { 
             surname, 
             other_names, 
@@ -47,33 +42,20 @@ exports.registerStudent = async (req, res) => {
         const passportPath = savedFiles['passport'] || null;
         const certificatePath = savedFiles['certificates'] || null;
 
-        // 3. Prepare the SQL Query
-        const query = `
-            INSERT INTO applications (
-                surname, other_names, email, dob, sex,
-                place_of_birth, state_of_origin, nationality, address,
-                phone, course_id, nok_name, nok_phone, nok_relation,
-                org_pos, education, technical, qualifications, experience,
-                payment_status, passport_url, certificate_url, payment_ref
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)
-            RETURNING id;
-        `;
-
-        const pendingPaymentReference = `REG-PENDING-${crypto.randomUUID()}`;
-
-        const values = [
-            surname, other_names, email, dob, sex,
-            place_of_birth, state_of_origin, nationality, address,
-            phone, selectedCourse, nok_name, nok_phone, nok_relation,
-            normalizeOptionalText(org_pos), normalizeOptionalText(education), normalizeOptionalText(technical), normalizeOptionalText(qualifications), normalizeOptionalText(experience),
-            'Pending',
-            passportPath, certificatePath, pendingPaymentReference
-        ];
-
-        // 4. Execute the query
-        const result = await db.query(query, values);
+        // Free registrations are saved immediately. Paid registrations use the
+        // payment-intent flow and are only saved after provider verification.
+        const paymentReference = payment_ref === 'FREE_REG'
+            ? 'FREE_REG'
+            : 'REG-PENDING-' + crypto.randomUUID();
+        const applicationId = await insertApplication({
+            queryable: db,
+            registration: req.body,
+            passportUrl: passportPath,
+            certificateUrl: certificatePath,
+            paymentReference,
+        });
         
-        console.log(`✅ New application received: ID ${result.rows[0].id}`);
+        console.log('New application received: ID ' + applicationId);
 
         await logAction({
             req,
@@ -82,24 +64,24 @@ exports.registerStudent = async (req, res) => {
             actorType: 'student',
             actorName: `${surname} ${other_names}`.trim(),
             metadata: {
-                application_id: result.rows[0].id,
+                application_id: applicationId,
                 email,
                 course_id: selectedCourse,
-                payment_ref: pendingPaymentReference,
+                payment_ref: paymentReference,
             },
             targetType: 'application',
-            targetId: result.rows[0].id,
+            targetId: applicationId,
             statusCode: 201,
         });
 
         res.status(201).json({ 
             success: true, 
             message: "Enrollment application submitted successfully!", 
-            applicationId: result.rows[0].id 
+            applicationId
         });
 
     } catch (err) {
-        console.error("❌ Enrollment Error:", err.message);
+        console.error("Enrollment Error:", err.message);
         
         // Handle specific DB errors (like missing columns)
         if (err.code === '42703') {
@@ -112,7 +94,7 @@ exports.registerStudent = async (req, res) => {
             return res.status(409).json({ error: 'An application or payment reference with these details already exists.' });
         }
 
-        res.status(500).json({ error: "Server error during enrollment process" });
+        res.status(500).json({ error: err.message || "Unable to save the application. Please try again." });
     }
 };
 

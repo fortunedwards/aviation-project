@@ -7,8 +7,9 @@ const validate = (schema) => (req, res, next) => {
         next();
     } catch (err) {
         // check if it's a Zod error
-        if (err instanceof z.ZodError && Array.isArray(err.errors)) {
-            const errorMessages = err.errors.map((e) => ({
+        const issues = err instanceof z.ZodError ? (err.issues || err.errors || []) : [];
+        if (Array.isArray(issues) && issues.length > 0) {
+            const errorMessages = issues.map((e) => ({
                 path: e.path[0],
                 message: e.message
             }));
@@ -23,7 +24,7 @@ const validate = (schema) => (req, res, next) => {
         console.error("Validation Middleware Error:", err);
         return res.status(500).json({ 
             success: false, 
-            message: "Internal Server Error during validation" 
+            message: err.message || "Unable to validate the submitted information."
         });
     }
 };
