@@ -13,7 +13,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage: multer.memoryStorage(), fileFilter, limits: { fileSize: 1024 * 1024 * 5 } });
 
-const uploadBufferToCloudinary = ({ buffer, folder, resourceType, fileName }) =>
+const uploadBufferToCloudinary = ({ buffer, folder, resourceType }) =>
     new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
             {
@@ -22,7 +22,6 @@ const uploadBufferToCloudinary = ({ buffer, folder, resourceType, fileName }) =>
                 use_filename: true,
                 unique_filename: true,
                 overwrite: false,
-                ...(fileName ? { public_id: path.parse(fileName).name } : {}),
             },
             (err, result) => {
                 if (err) return reject(err);
@@ -53,7 +52,6 @@ upload.uploadApplicationFiles = async (files) => {
                 buffer: processed,
                 folder: 'aeroconsult/passports',
                 resourceType: 'image',
-                fileName: file.originalname,
             });
 
             result[field] = uploaded.secure_url;
@@ -64,7 +62,6 @@ upload.uploadApplicationFiles = async (files) => {
             buffer: file.buffer,
             folder: 'aeroconsult/applications',
             resourceType: isImage ? 'image' : 'raw',
-            fileName: file.originalname,
         });
 
         result[field] = uploaded.secure_url;
@@ -100,7 +97,6 @@ upload.uploadChatFileToCloudinary = async (file) => {
         buffer: file.buffer,
         folder: 'aeroconsult/chat-uploads',
         resourceType: getChatFileType(file.mimetype),
-        fileName: file.originalname,
     });
 
     return {
