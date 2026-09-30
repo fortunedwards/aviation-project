@@ -182,7 +182,7 @@ const ChatWidget = ({ user }) => {
   useEffect(() => {
     if (!isAuthenticated || !roomId) return;
     const token = localStorage.getItem('token');
-    axios
+    api
       .get('/api/chat/unread', { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => setUnreadCount(res.data[roomId] || 0))
       .catch(() => {});
