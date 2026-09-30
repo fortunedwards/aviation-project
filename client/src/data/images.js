@@ -5,18 +5,12 @@ export const HOME_HERO_SLIDES = [
   'https://images.unsplash.com/photo-1725653387938-0003bc52ccf5?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
 ];
 
-export const HOME_UPCOMING_TRAINING_IMAGES = [
-  `${import.meta.env.BASE_URL}fdb.png`,
-  `${import.meta.env.BASE_URL}cabin.png`,
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCD-q1gygpZVGEVU22F3cmEQak9b_h4apPW9hA9XPgyKYrbe0a3n-jS1L32yUcdXkHrwD8VFNLqrNPSNE5INXJ7f5gkVXmGJxcWVzyQ7R9mgS0N-TQvsQcKgArds-DzC70fhuo-sS9g522NXH7evDRn50sjN8qsIdPXvqKAkMqSztrXDRMqoZ0Qn-jZEgMYyERqcZkR6hls2zdibvUMiL38nZqm3RbcWMJArU6Q_ULKspJOVMsNd26KyJjt_IB3XXuQfJe9nlwyoYcB',
-];
-
 export const HOME_FEATURE_IMAGE = `${import.meta.env.BASE_URL}home1.png`;
 
 export const ABOUT_HERO_SLIDES = [
   `${import.meta.env.BASE_URL}home1.png`,
   `${import.meta.env.BASE_URL}cabin.png`,
-  `${import.meta.env.BASE_URL}fdb.png`,
+  `${import.meta.env.BASE_URL}fdb.jpg`,
 ];
 
 export const ABOUT_IMAGE = HOME_FEATURE_IMAGE;
@@ -50,7 +44,20 @@ const normalizeTitle = (value) =>
     .replace(/\s+/g, ' ')
     .trim();
 
-const COURSE_IMAGE_OVERRIDES = new Map([
+// All public course views call getCourseHeroImage, so course artwork is
+// maintained here rather than independently on the home, catalog, and detail pages.
+const COURSE_IMAGE_BY_SLUG = new Map([
+  ['flight-dispatcher-flight-operations-officer-basic-fdb', `${import.meta.env.BASE_URL}fdb.jpg`],
+  ['flight-dispatcher-flight-operations-officer-advanced-fda', `${import.meta.env.BASE_URL}fda.png`],
+  ['erj-135-145-legacy-type-training-maintenance-initial', `${import.meta.env.BASE_URL}erj.jpg`],
+  ['erj-135-145-legacy-type-training-maintenance-refresher', `${import.meta.env.BASE_URL}erj.jpg`],
+  ['cabin-crew-initial-training-cci', `${import.meta.env.BASE_URL}cci.jpg`],
+  ['cabin-crew-conversion-refresher-training-b737-classic', `${import.meta.env.BASE_URL}cci.jpg`],
+  ['cabin-crew-conversion-refresher-training-hs125-800', `${import.meta.env.BASE_URL}cci.jpg`],
+  ['basic-aircraft-maintenance-technicians-course-batco', `${import.meta.env.BASE_URL}batco.jpg`],
+]);
+
+const COURSE_IMAGE_BY_TITLE = new Map([
   ['airworthiness course awc', `${import.meta.env.BASE_URL}awc.png`],
   ['aircraft maintenance planning and control ampc', `${import.meta.env.BASE_URL}ampc.png`],
   ['aviation stores management asm', `${import.meta.env.BASE_URL}asm.png`],
@@ -60,7 +67,9 @@ const COURSE_IMAGE_OVERRIDES = new Map([
 ]);
 
 export const getCourseHeroImage = (course, fallbackIndex = 0) => {
-  const override = COURSE_IMAGE_OVERRIDES.get(normalizeTitle(course?.title));
+  const override =
+    COURSE_IMAGE_BY_SLUG.get(String(course?.slug || '')) ||
+    COURSE_IMAGE_BY_TITLE.get(normalizeTitle(course?.title));
   if (override) return override;
 
   return COURSE_DETAILS_HERO_IMAGES[fallbackIndex % COURSE_DETAILS_HERO_IMAGES.length];
